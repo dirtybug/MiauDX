@@ -1,0 +1,26 @@
+{
+  "commands": [
+    {
+      "name": "Set Frequency (FA)",
+      "command": "FA",
+      "parameters": [
+        {
+          "name": "Frequency",
+          "min_value": 0,
+          "max_value": 30000000,
+          "required_digits": 11
+        }
+      ]
+    },
+	{
+	  "name": "Read Frequency (FA)",
+	  "command": "FA",
+	  "parameters": [ ]
+	},
+    {
+      "name": "Identity Request (ID)",
+      "command": "ID",
+      "parameters": []
+    }
+  ]
+}
