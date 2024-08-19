@@ -2,6 +2,8 @@ package ft891;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -15,12 +17,15 @@ public class FT891CommManager extends Thread {
     private OutputStream outputStream;
     private InputStream inputStream;
     private BlockingQueue<String> commandQueue;
-
+    private LogCallback logCallback;
     private String currentFrequency;
-	private FT891ControlApp control;
+    
+    public interface LogCallback {
+        void onLog(String message);
+    }
 
-    public FT891CommManager(FT891ControlApp control) {
-        this.control = control;
+    public FT891CommManager(LogCallback logCallback) {
+    	this.logCallback = logCallback;
         this.commandQueue = new LinkedBlockingQueue<>();
     }
 
@@ -44,20 +49,20 @@ public class FT891CommManager extends Thread {
             if (serialPort.openPort()) {
                 outputStream = serialPort.getOutputStream();
                 inputStream = serialPort.getInputStream();
-                control.onLog("Connected to " + portName);
+                logCallback.onLog("Connected to " + portName);
 
                 // Send the "ID;" command and verify the response
                 sendCommand("ID;");
                 String response = readResponse();
                 if (verifyID(response)) {
-                    control.onLog("ID verification successful.");
+                    logCallback.onLog("ID verification successful.");
 
                     // Send the "FA;" command after successful ID verification
                     sendCommand("FA;");
                     this.currentFrequency = readResponse();
-                    control.onLog("FA command sent.");
+                    logCallback.onLog("FA command sent.");
                 } else {
-                    control.onLog("ID verification failed. Disconnecting...");
+                    logCallback.onLog("ID verification failed. Disconnecting...");
                     disconnect();
                     return;
                 }
@@ -65,10 +70,10 @@ public class FT891CommManager extends Thread {
                 // Start the thread
                 this.start();
             } else {
-                control.onLog("Failed to open port " + portName);
+                logCallback.onLog("Failed to open port " + portName);
             }
         } catch (Exception e) {
-            control.onLog("Error connecting to port: " + e.getMessage());
+            logCallback.onLog("Error connecting to port: " + e.getMessage());
         }
     }
 
@@ -82,11 +87,11 @@ public class FT891CommManager extends Thread {
                 // Wait for a response after sending the command
                 String cmdResponse = readResponse();
                 if (cmdResponse != null) {
-                    control.onLog(cmdResponse); // Send the response back to the UI or main app
+                    logCallback.onLog(cmdResponse); // Send the response back to the UI or main app
                 }
             }
         } catch (InterruptedException e) {
-            control.onLog("Command sender thread interrupted.");
+            logCallback.onLog("Command sender thread interrupted.");
         }
     }
 
@@ -95,7 +100,7 @@ public class FT891CommManager extends Thread {
 
         if (serialPort != null && serialPort.isOpen()) {
             serialPort.closePort();
-            control.onLog("Disconnected.");
+            logCallback.onLog("Disconnected.");
         }
     }
 
@@ -105,23 +110,23 @@ public class FT891CommManager extends Thread {
         }
         try {
             commandQueue.put(command);
-            control.onLog("Command queued: " + command);
+            logCallback.onLog("Command queued: " + command);
         } catch (InterruptedException e) {
-            control.onLog("Failed to queue command: " + e.getMessage());
+            logCallback.onLog("Failed to queue command: " + e.getMessage());
         }
     }
 
     private void sendCommand(String command) {
         if (serialPort == null || !serialPort.isOpen()) {
-            control.onLog("Not connected to any port.");
+            logCallback.onLog("Not connected to any port.");
             return;
         }
 
         try {
             outputStream.write(command.getBytes());
-            control.onLog("Command sent: " + command);
+            logCallback.onLog("Command sent: " + command);
         } catch (Exception e) {
-            control.onLog("Failed to send command: " + e.getMessage());
+            logCallback.onLog("Failed to send command: " + e.getMessage());
         }
     }
 
@@ -143,7 +148,7 @@ public class FT891CommManager extends Thread {
 
             if (response.length() > 0) {
                 // Log the raw response
-                control.onLog("Raw response received: " + response);
+                logCallback.onLog("Raw response received: " + response);
 
                 // Remove the first two characters and the semicolon
                 String processedResponse = response.toString();
@@ -152,14 +157,14 @@ public class FT891CommManager extends Thread {
                 }
 
                 // Log the processed response
-                control.onLog("Processed response: " + processedResponse);
+                logCallback.onLog("Processed response: " + processedResponse);
 
                 return processedResponse;
             }
 
             return null;
         } catch (Exception e) {
-            control.onLog("Failed to read response: " + e.getMessage());
+            logCallback.onLog("Failed to read response: " + e.getMessage());
             return null;
         }
     }
@@ -185,4 +190,12 @@ public class FT891CommManager extends Thread {
                 return SerialPort.NO_PARITY;
         }
     }
+
+
+
+	public void setFrequency(String message) {
+		sendCommand("FA"+message+";");
+		
+		
+	}
 }

@@ -1,0 +1,7 @@
+{
+    "baudRate": 38400,
+    "port": "COM4",
+    "ClusterPort": "7300",
+    "callsign": "HB9IMH",
+    "Cluster": "9m2pju.hamradio.my"
+}

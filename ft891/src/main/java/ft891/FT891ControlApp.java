@@ -4,7 +4,11 @@ import commands.Command;
 import commands.CommandParameter;
 import commands.JsonCommandLoader;
 
+
 import javax.swing.*;
+
+import cluster.HamRadioClusterConnection;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,12 +31,29 @@ public class FT891ControlApp extends JFrame implements ActionListener {
     private Map<String, Command> commandMap;
     private FT891CommManager commManager;
     private boolean isConnected = false;  // Track connection state
+    private ConfigManager configManager;
+    private ConnectionLogWindow connectionLogWindow;
 
     public FT891ControlApp() {
         super("FT-891 Control Application");
+        configManager = new ConfigManager();
         setLayout(new BorderLayout());
+        logArea = new JTextArea();
+        commManager = new FT891CommManager(message -> this.onLog(message));
+        connectionLogWindow = new ConnectionLogWindow(message -> commManager.setFrequency(message));
+        
+        new RepeaterTableWindow();
+        
 
-        commManager = new FT891CommManager(this);
+        HamRadioClusterConnection clusterConnection = new HamRadioClusterConnection(
+        		configManager.getCluster(),  // Replace with actual cluster host
+        		configManager.getClusterPort(),                 // Replace with actual cluster port
+        		configManager.getCallsign(),       // Replace with your actual callsign
+                message -> connectionLogWindow.logMessage(message), // Replace with your log handler
+                (freq,callsign,location) ->connectionLogWindow.addSpot(freq,callsign,location)
+        );
+
+        clusterConnection.start();
         commandMap = new HashMap<>();
 
         JPanel topPanel = new JPanel();
@@ -60,7 +81,7 @@ public class FT891ControlApp extends JFrame implements ActionListener {
         commandDropdown = new JComboBox<>();
         parameterPanel = new JPanel();
         sendCommandButton = new JButton("Send Command");
-        logArea = new JTextArea();
+        
         
         // Load commands using JsonCommandLoader
         try {
@@ -106,7 +127,7 @@ public class FT891ControlApp extends JFrame implements ActionListener {
         add(topPanel, BorderLayout.NORTH);
         add(commandPanel, BorderLayout.CENTER);
 
-        
+        loadConfig();
         logArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(logArea);
         add(scrollPane, BorderLayout.SOUTH);
@@ -119,7 +140,7 @@ public class FT891ControlApp extends JFrame implements ActionListener {
         setSize(600, 400);
         setVisible(true);
     }
- 
+
     private void updateParameterPanel() {
         parameterPanel.removeAll();
         String selectedCommandName = (String) commandDropdown.getSelectedItem();
@@ -161,6 +182,19 @@ public class FT891ControlApp extends JFrame implements ActionListener {
         }
     }
 
+    private void loadConfig() {
+        String savedPort = configManager.getPort();
+        int savedBaudRate = configManager.getBaudRate();
+
+        if (savedPort != null && savedBaudRate != -1) {
+            portDropdown.setSelectedItem(savedPort);
+            baudRateDropdown.setSelectedItem(savedBaudRate);
+            onLog("Configuration loaded from " + ConfigManager.CONFIG_FILE);
+        } else {
+            onLog("No previous configuration found.");
+        }
+    }
+
     private void connectToTransceiver() {
         if (!isConnected) {
             String selectedPort = (String) portDropdown.getSelectedItem();
@@ -168,12 +202,27 @@ public class FT891ControlApp extends JFrame implements ActionListener {
             commManager.connect(selectedPort, selectedBaudRate, 8, 1, "None");
             isConnected = true;
             connectButton.setText("Disconnect");
+
+            // Save the configuration to a JSON file upon connecting
+            configManager.saveConfig(selectedPort, selectedBaudRate);
+
         } else {
             commManager.disconnect();
             isConnected = false;
             connectButton.setText("Connect");
+            if (connectionLogWindow != null) {
+                connectionLogWindow.dispose();  // Close the log window on disconnect
+            }
         }
     }
+
+
+    public void onLog(String message) {
+        logArea.append(message + "\n");
+
+    }
+
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -187,11 +236,4 @@ public class FT891ControlApp extends JFrame implements ActionListener {
             connectToTransceiver();
         }
     }
-
-
-	public void onLog(String message) {
-        logArea.append(message + "\n");
-
-		
-	}
 }
