@@ -17,6 +17,7 @@ public class HamRadioClusterConnection extends Thread {
     private PrintWriter writer;
     private BufferedReader reader;
 private LogCallback logCallback;
+
     public interface LogCallback {
         void onLog(String message);
     }
@@ -29,6 +30,7 @@ private LogCallback logCallback;
         this.host = host;
         this.port = port;
         this.callsign = callsign;
+
         this.logCallback = logCallback;
         this.freqCallback = freqCallback;
         this.telnetClient = new TelnetClient();

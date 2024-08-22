@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import repeater.RepeaterFinder;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class RepeaterTableWindow extends JFrame {
 
@@ -16,11 +18,17 @@ public class RepeaterTableWindow extends JFrame {
     private DefaultTableModel repeaterTableModel;
     private JTextArea logArea;
     private JLabel locationLabel;
-    public RepeaterTableWindow() {
+    private FreqCallback freqCallback;
 
+    public interface FreqCallback {
+        void setfreq(String frequency, String mode, String dcs, String tone);
+    }
+
+    public RepeaterTableWindow(String 	country,  FreqCallback freqCallback) {
         super("Nearby Repeaters");
+        this.freqCallback = freqCallback;
 
-        String country = "Switzerland"; // or "Portugal"
+       // String country = "Switzerland"; // or "Portugal"
 
         setLayout(new BorderLayout());
 
@@ -35,6 +43,34 @@ public class RepeaterTableWindow extends JFrame {
         repeaterTableModel = new DefaultTableModel(columnNames, 0);
         repeaterTable = new JTable(repeaterTableModel);
         JScrollPane tableScrollPane = new JScrollPane(repeaterTable);
+
+        // Add a mouse listener to detect single clicks on table rows
+        repeaterTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) { // Detect single click
+                    int row = repeaterTable.getSelectedRow();
+                    if (row != -1) { // Ensure a row is selected
+                        // Retrieve the frequency from the selected row
+                        String frequency = repeaterTableModel.getValueAt(row, 1).toString();
+
+                        // Remove the decimal point
+                        String formattedFrequency = frequency.replace(".", "");
+
+                        // Ensure the frequency is 11 digits by padding with zeros on the left
+                        formattedFrequency = String.format("%09d", Long.parseLong(formattedFrequency));
+
+                        // Retrieve the other values from the selected row
+                        String mode = repeaterTableModel.getValueAt(row, 5).toString();
+                        String dcs = repeaterTableModel.getValueAt(row, 4).toString();
+                        String tone = repeaterTableModel.getValueAt(row, 3).toString();
+
+                        // Call the setfreq function with the formatted frequency and other data
+                        freqCallback.setfreq(formattedFrequency, mode,tone, dcs );
+                    }
+                }
+            }
+        });
 
         // Create a label to display the current location
         locationLabel = new JLabel("Current Location: Unknown");
@@ -61,7 +97,6 @@ public class RepeaterTableWindow extends JFrame {
     }
 
     public void displayRepeaters(JSONArray repeaters) {
-
         repeaterTableModel.setRowCount(0); // Clear the existing rows
         for (int i = 0; i < repeaters.length(); i++) {
             JSONObject repeaterJson = repeaters.getJSONObject(i);

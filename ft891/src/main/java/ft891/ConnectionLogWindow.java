@@ -54,7 +54,7 @@ public class ConnectionLogWindow extends JFrame {
 
                     int row = spotTable.getSelectedRow();
                     if (row != -1) {
-                        String frequency = (String) spotTableModel.getValueAt(row, 2);
+                        String frequency = (String) spotTableModel.getValueAt(row, 1);
 
                         // Convert the frequency string (e.g., "144174.0") to an integer value
                         double freqDouble = Double.parseDouble(frequency);
@@ -73,7 +73,7 @@ public class ConnectionLogWindow extends JFrame {
         connectionLogArea.append(message + "\n");
     }
 
-    public void addSpot(String frequency, String callSign, String location) {
+	public void addSpot(String frequency, String callSign, String location) {
         // Get the current timestamp
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         // Check if the call sign already exists in the table
@@ -112,5 +112,7 @@ public class ConnectionLogWindow extends JFrame {
         super.dispose();
         cleanupTimer.stop(); // Stop the timer when the window is closed
     }
+
+
 }
 

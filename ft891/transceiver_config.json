@@ -3,5 +3,6 @@
     "port": "COM4",
     "ClusterPort": "7300",
     "callsign": "HB9IMH",
+    "Country": "Portugal",
     "Cluster": "9m2pju.hamradio.my"
 }
