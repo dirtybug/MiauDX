@@ -7,6 +7,35 @@ Official release assets can also be directly downloaded from the [GitHub Release
 ---
 
 <!-- RELEASES_LIST_START -->
+## [v1.0.7] - 2026-09-20
+
+### 📱 Google Play Store Metadata
+- **Version Name (`versionName`):** `1.07`
+- **Version Code (`versionCode`):** `107` (Next in sequence after 106)
+- **Application ID:** `com.Runner.CQMiau`
+- **Target SDK:** Android 16 (API 36) / **Min SDK:** Android 8.0 (API 26)
+
+### 🧪 Tests and Quality
+- **Hermetic Build Environment:** Docker (OpenJDK 17 + Android SDK 36)
+- **Compilation Toolchain:** Android Gradle Plugin 8.13.2 + Gradle 8.13
+- **Test Suite:** Unit tests and automated visual frame screenshots
+
+### 📥 Release Deliverables
+| Artifact | File | Description |
+| :--- | :--- | :--- |
+| **AAB Bundle** | [`MiauCQ-v1.0.7.aab`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.7) | Signed production Android App Bundle for Google Play Store |
+| **APK Release** | [`MiauCQ-v1.0.7.apk`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.7) | Signed production Android APK for direct device installation |
+| **Test Reports** | [`MiauCQ-v1.0.7-test-reports.zip`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.7) | Full unit test execution report |
+| **Screenshots** | [`MiauCQ-v1.0.7-screenshots.zip`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.7) | Visual per-frame screenshots for Google Play listing |
+
+### 🚀 Key Improvements in v1.0.7
+- **Target Android 16 (API 36):** Full compliance with Google Play Developer Programme Policies requiring API 35/36.
+- **Sequential Version Code `107` (`1.07`):** Direct successor to production release `106 (1.06)` on Google Play Console.
+- **Docker Hermetic CI/CD Pipeline:** Reproducible containerized builds with OpenJDK 17 and Android SDK 36.
+- **Automated Play Store Signing:** Signed with release keystore and password from repository secrets.
+
+<hr>
+
 ## [v1.0.6] - 2026-09-20
 
 ### 📱 Google Play Store Metadata

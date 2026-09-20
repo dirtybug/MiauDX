@@ -12,7 +12,7 @@ echo "====================================================="
 echo "               MiauDX / CQMiau Test Runner            "
 echo "====================================================="
 
-VERSION_TAG="${APP_VERSION_NAME:-1.06}"
+VERSION_TAG="${APP_VERSION_NAME:-1.07}"
 if [[ "$VERSION_TAG" != v* ]]; then
     VERSION_TAG="v${VERSION_TAG}"
 fi
@@ -89,7 +89,7 @@ case "$ACTION" in
 
     unit|test)
         echo ">>> Running Unit Tests for MiauDX / com.Runner.CQMiau..."
-        ./gradlew test -PversionName="${APP_VERSION_NAME:-1.06}" -PversionCode="${APP_VERSION_CODE:-10006}" --info --stacktrace
+        ./gradlew test -PversionName="${APP_VERSION_NAME:-1.07}" -PversionCode="${APP_VERSION_CODE:-107}" --info --stacktrace
         echo ""
         echo ">>> Copying unit test reports to $RELEASE_DIR/reports/unit-tests..."
         if [ -d "app/build/reports/tests/testDebugUnitTest" ]; then
@@ -126,8 +126,8 @@ case "$ACTION" in
         ;;
 
     build|assemble)
-        echo ">>> Building Debug APK (Version: ${APP_VERSION_NAME:-1.06}, Code: ${APP_VERSION_CODE:-10006})..."
-        ./gradlew assembleDebug -PversionName="${APP_VERSION_NAME:-1.06}" -PversionCode="${APP_VERSION_CODE:-10006}" --info
+        echo ">>> Building Debug APK (Version: ${APP_VERSION_NAME:-1.07}, Code: ${APP_VERSION_CODE:-107})..."
+        ./gradlew assembleDebug -PversionName="${APP_VERSION_NAME:-1.07}" -PversionCode="${APP_VERSION_CODE:-107}" --info
         mkdir -p "$RELEASE_DIR"
         mkdir -p /workspace/release
         find app/build/outputs/apk/debug -name "*.apk" -exec cp {} "$RELEASE_DIR/MiauCQ-debug.apk" \; 2>/dev/null || true
@@ -137,7 +137,7 @@ case "$ACTION" in
         ;;
 
     release)
-        echo ">>> Building Release Deliverables (Version: ${APP_VERSION_NAME:-1.06}, Code: ${APP_VERSION_CODE:-10006})..."
+        echo ">>> Building Release Deliverables (Version: ${APP_VERSION_NAME:-1.07}, Code: ${APP_VERSION_CODE:-107})..."
         KEY_ALIAS_PARAM=""
         if [ -n "$KEY_ALIAS" ]; then
             KEY_ALIAS_PARAM="-PkeyAlias=$KEY_ALIAS"
@@ -148,7 +148,7 @@ case "$ACTION" in
         fi
         mkdir -p "$RELEASE_DIR"
         mkdir -p /workspace/release
-        ./gradlew assembleRelease bundleRelease -PversionName="${APP_VERSION_NAME:-1.06}" -PversionCode="${APP_VERSION_CODE:-10006}" $KEY_PASS_PARAM $KEY_ALIAS_PARAM --info
+        ./gradlew assembleRelease bundleRelease -PversionName="${APP_VERSION_NAME:-1.07}" -PversionCode="${APP_VERSION_CODE:-107}" $KEY_PASS_PARAM $KEY_ALIAS_PARAM --info
         find app/build/outputs/apk/release -name "*.apk" -exec cp {} "$RELEASE_DIR/MiauCQ-release.apk" \; 2>/dev/null || true
         cp -f "$RELEASE_DIR/MiauCQ-release.apk" "$RELEASE_DIR/MiauCQ-development-release.apk" 2>/dev/null || true
         cp -f "$RELEASE_DIR/MiauCQ-release.apk" /workspace/release/MiauCQ-release.apk 2>/dev/null || true

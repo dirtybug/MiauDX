@@ -12,15 +12,28 @@ android {
         minSdk 26
         targetSdk 36
 
-        def defaultCode = 10006
-        def defaultName = "1.06"
+        def defaultCode = 107
+        def defaultName = "1.07"
 
-        def appVersionName = project.hasProperty('versionName') ? project.property('versionName').toString() : (System.getenv("APP_VERSION_NAME") ?: defaultName)
-        if (appVersionName.startsWith("v")) {
-            appVersionName = appVersionName.substring(1)
+        def rawVersionName = project.hasProperty('versionName') ? project.property('versionName').toString() : (System.getenv("APP_VERSION_NAME") ?: defaultName)
+        if (rawVersionName.startsWith("v")) {
+            rawVersionName = rawVersionName.substring(1)
         }
 
-        def appVersionCode = project.hasProperty('versionCode') ? project.property('versionCode').toString().toInteger() : (System.getenv("APP_VERSION_CODE") ? System.getenv("APP_VERSION_CODE").toInteger() : defaultCode)
+        // Normalize 1.0.7 -> 1.07 to match Google Play convention (104 -> 1.04, 105 -> 1.05, 106 -> 1.06, 107 -> 1.07)
+        def appVersionName = rawVersionName
+        def m = (rawVersionName =~ /^(\d+)\.0\.(\d+)$/)
+        if (m.matches()) {
+            appVersionName = "${m[0][1]}.0${m[0][2]}"
+        }
+
+        def computedCode = defaultCode
+        def numMatch = (appVersionName =~ /^(\d+)\.(\d+)$/)
+        if (numMatch.matches()) {
+            computedCode = numMatch[0][1].toInteger() * 100 + numMatch[0][2].toInteger()
+        }
+
+        def appVersionCode = project.hasProperty('versionCode') ? project.property('versionCode').toString().toInteger() : (System.getenv("APP_VERSION_CODE") ? System.getenv("APP_VERSION_CODE").toInteger() : computedCode)
 
         versionCode appVersionCode
         versionName appVersionName
