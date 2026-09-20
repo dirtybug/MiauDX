@@ -52,60 +52,123 @@ public class ScreenshotGenerator {
             outputDir.mkdirs();
         }
 
+        // Dedicated folders per radio and general
+        File generalDir = new File(outputDir, "general");
+        generalDir.mkdirs();
+
+        File yaesuFt891Dir = new File(outputDir, "yaesu_ft891");
+        yaesuFt891Dir.mkdirs();
+
+        File ft891AliasDir = new File(outputDir, "FT891");
+        ft891AliasDir.mkdirs();
+
+        File radiosFt891Dir = new File(outputDir, "radios/yaesu_ft891");
+        radiosFt891Dir.mkdirs();
+
         System.out.println("=====================================================");
         System.out.println("       MiauDX Visual Frame Screenshot Generator      ");
         System.out.println("=====================================================");
-        System.out.println("Output folder: " + outputDir.getAbsolutePath());
+        System.out.println("Output root folder: " + outputDir.getAbsolutePath());
+        System.out.println("General folder:     " + generalDir.getAbsolutePath());
+        System.out.println("Yaesu FT-891 folder:" + yaesuFt891Dir.getAbsolutePath());
 
         try {
+            // -------------------------------------------------------------
+            // GENERAL APP SCREENSHOTS (general/ and root)
+            // -------------------------------------------------------------
             // Frame 1: Main DX Cluster (activity_main.xml)
-            renderFrame1DxCluster(new File(outputDir, "frame_01_main_dx_cluster.png"));
+            File f1Gen = new File(generalDir, "frame_01_main_dx_cluster.png");
+            renderFrame1DxCluster(f1Gen);
+            copyFile(f1Gen, new File(outputDir, "frame_01_main_dx_cluster.png"));
 
             // Frame 2: Menu Lateral / Options Menu (main_menu.xml)
-            File f2Menu = new File(outputDir, "frame_02_lateral_menu.png");
-            File f2Rig = new File(outputDir, "frame_02_cat_rig_control.png");
-            File f2MenuAlt = new File(outputDir, "frame_02_menu_lateral.png");
+            File f2Menu = new File(generalDir, "frame_02_lateral_menu.png");
             renderFrame2LateralMenu(f2Menu);
-            copyFile(f2Menu, f2Rig);
-            copyFile(f2Menu, f2MenuAlt);
+            copyFile(f2Menu, new File(generalDir, "frame_02_menu_lateral.png"));
+            copyFile(f2Menu, new File(outputDir, "frame_02_lateral_menu.png"));
+            copyFile(f2Menu, new File(outputDir, "frame_02_menu_lateral.png"));
 
             // Frame 3: Band Filter (activity_filter.xml)
-            File f3Filter = new File(outputDir, "frame_03_filter_band.png");
-            File f4FilterAlt = new File(outputDir, "frame_04_band_mode_filter.png");
+            File f3Filter = new File(generalDir, "frame_03_filter_band.png");
             renderFrame3BandFilter(f3Filter);
-            copyFile(f3Filter, f4FilterAlt);
+            copyFile(f3Filter, new File(generalDir, "frame_04_band_mode_filter.png"));
+            copyFile(f3Filter, new File(outputDir, "frame_03_filter_band.png"));
+            copyFile(f3Filter, new File(outputDir, "frame_04_band_mode_filter.png"));
 
             // Frame 4: View Logs / QSO Logbook (activity_view_logs.xml + item_log.xml)
-            File f4Logs = new File(outputDir, "frame_04_view_logs.png");
-            File f3LogsAlt = new File(outputDir, "frame_03_qso_logbook.png");
+            File f4Logs = new File(generalDir, "frame_04_view_logs.png");
             renderFrame4ViewLogs(f4Logs);
-            copyFile(f4Logs, f3LogsAlt);
+            copyFile(f4Logs, new File(generalDir, "frame_03_qso_logbook.png"));
+            copyFile(f4Logs, new File(outputDir, "frame_04_view_logs.png"));
+            copyFile(f4Logs, new File(outputDir, "frame_03_qso_logbook.png"));
 
             // Frame 5: COM Port Config / Open Radio (activity_com_port_config.xml)
-            File f5Port = new File(outputDir, "frame_05_com_port_config.png");
-            File f6PortAlt = new File(outputDir, "frame_06_usb_cat_config.png");
+            File f5Port = new File(generalDir, "frame_05_com_port_config.png");
             renderFrame5ComPortConfig(f5Port);
-            copyFile(f5Port, f6PortAlt);
+            copyFile(f5Port, new File(generalDir, "frame_06_usb_cat_config.png"));
+            copyFile(f5Port, new File(outputDir, "frame_05_com_port_config.png"));
+            copyFile(f5Port, new File(outputDir, "frame_06_usb_cat_config.png"));
 
             // Frame 6: User Settings (activity_user_settings.xml)
-            File f6Settings = new File(outputDir, "frame_06_user_settings.png");
-            File f7SettingsAlt = new File(outputDir, "frame_07_user_settings.png");
+            File f6Settings = new File(generalDir, "frame_06_user_settings.png");
             renderFrame6UserSettings(f6Settings);
-            copyFile(f6Settings, f7SettingsAlt);
+            copyFile(f6Settings, new File(generalDir, "frame_07_user_settings.png"));
+            copyFile(f6Settings, new File(outputDir, "frame_06_user_settings.png"));
+            copyFile(f6Settings, new File(outputDir, "frame_07_user_settings.png"));
 
             // Frame 7: CQ Mode & Rig Control (activity_cq_mode.xml)
-            File f7Cq = new File(outputDir, "frame_07_cq_mode.png");
+            File f7Cq = new File(generalDir, "frame_07_cq_mode.png");
             renderFrame7CqMode(f7Cq);
+            copyFile(f7Cq, new File(outputDir, "frame_07_cq_mode.png"));
 
             // Frame 8: Spot Details & Tuning (activity_spot.xml & activity_edit_log.xml)
-            File f8Spot = new File(outputDir, "frame_08_spot_details.png");
-            File f5SpotAlt = new File(outputDir, "frame_05_spot_details.png");
-            File f8EditAlt = new File(outputDir, "frame_08_edit_qso_log.png");
+            File f8Spot = new File(generalDir, "frame_08_spot_details.png");
             renderFrame8SpotDetails(f8Spot);
-            copyFile(f8Spot, f5SpotAlt);
-            copyFile(f8Spot, f8EditAlt);
+            copyFile(f8Spot, new File(generalDir, "frame_05_spot_details.png"));
+            copyFile(f8Spot, new File(generalDir, "frame_08_edit_qso_log.png"));
+            copyFile(f8Spot, new File(outputDir, "frame_08_spot_details.png"));
+            copyFile(f8Spot, new File(outputDir, "frame_05_spot_details.png"));
+            copyFile(f8Spot, new File(outputDir, "frame_08_edit_qso_log.png"));
 
-            System.out.println("✓ Generated all visual screenshots with 100% accuracy!");
+            // -------------------------------------------------------------
+            // DEDICATED YAESU FT-891 SCREENSHOTS (yaesu_ft891/ and FT891/)
+            // -------------------------------------------------------------
+            // 1. FT-891 CAT Rig Control & LCD VFO Display
+            File ft1 = new File(yaesuFt891Dir, "01_yaesu_ft891_cat_rig_control.png");
+            renderFrame2YaesuFT891Simulation(ft1);
+            copyFile(ft1, new File(yaesuFt891Dir, "frame_01_cat_rig_control.png"));
+            copyFile(ft1, new File(outputDir, "frame_02_cat_rig_control.png"));
+            copyFile(ft1, new File(outputDir, "frame_02_yaesu_ft891_simulation.png"));
+
+            // 2. FT-891 CAT Protocol Monitor (Serial trace)
+            File ft2 = new File(yaesuFt891Dir, "02_yaesu_ft891_cat_protocol_monitor.png");
+            renderFrameYaesuFT891CatProtocolMonitor(ft2);
+            copyFile(ft2, new File(yaesuFt891Dir, "frame_02_cat_protocol_monitor.png"));
+
+            // 3. FT-891 COM Port Configuration (38400, 8N2)
+            File ft3 = new File(yaesuFt891Dir, "03_yaesu_ft891_com_port_config.png");
+            renderFrame5ComPortConfig(ft3);
+            copyFile(ft3, new File(yaesuFt891Dir, "frame_03_com_port_config.png"));
+
+            // 4. FT-891 DX Cluster Live QSY & VFO Sync
+            File ft4 = new File(yaesuFt891Dir, "04_yaesu_ft891_dx_cluster_qsy.png");
+            renderFrameYaesuFT891DxClusterQsy(ft4);
+            copyFile(ft4, new File(yaesuFt891Dir, "frame_04_dx_cluster_qsy.png"));
+
+            // 5. FT-891 CQ Mode & Auto-Tune
+            File ft5 = new File(yaesuFt891Dir, "05_yaesu_ft891_cq_mode.png");
+            renderFrameYaesuFT891CqMode(ft5);
+            copyFile(ft5, new File(yaesuFt891Dir, "frame_05_cq_mode.png"));
+
+            // Copy all Yaesu FT-891 screenshots to alias directories
+            for (File src : yaesuFt891Dir.listFiles()) {
+                if (src.isFile()) {
+                    copyFile(src, new File(ft891AliasDir, src.getName()));
+                    copyFile(src, new File(radiosFt891Dir, src.getName()));
+                }
+            }
+
+            System.out.println("✓ Generated all visual screenshots organized by radio folders!");
             System.out.println("=====================================================");
         } catch (Exception e) {
             System.err.println("Error generating screenshots: " + e.getMessage());
@@ -545,6 +608,263 @@ public class ScreenshotGenerator {
                 g.drawLine(menuX + 12, iy + itemH, menuX + menuW - 12, iy + itemH);
             }
         }
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // FRAME 2B: Yaesu FT-891 CAT Rig Control & Simulation
+    // -------------------------------------------------------------
+    private static void renderFrame2YaesuFT891Simulation(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "Yaesu FT-891 CAT Control", true, true);
+
+        int pad = 16;
+        int curY = 94;
+
+        // Card 1: Rig Connection Banner
+        int bannerH = 72;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), bannerH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), bannerH, 8, 8);
+
+        // Green dot for CONNECTED status
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 16, curY + 18, 12, 12);
+
+        // Rig title
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("YAESU FT-891 (HF/50MHz Transceiver)", pad + 36, curY + 28);
+
+        // Rig status subtitle
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        g.drawString("Status: CONNECTED (Simulated USB-CAT | 38400 baud, 8N2)", pad + 36, curY + 48);
+
+        // Badges: Model & Tested
+        int badgeW = 68;
+        int badgeH = 20;
+        int badgeX = WIDTH - pad - badgeW - 12;
+        g.setColor(new Color(0x00, 0xE6, 0x76, 40));
+        g.fillRoundRect(badgeX, curY + 14, badgeW, badgeH, 4, 4);
+        g.setColor(COLOR_GREEN);
+        g.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g.drawString("VERIFIED", badgeX + 11, curY + 28);
+
+        curY += bannerH + 14;
+
+        // Card 2: Yaesu FT-891 High-Contrast Amber/Dark LCD VFO Display
+        int lcdH = 175;
+        g.setColor(new Color(0x10, 0x14, 0x14));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), lcdH, 10, 10);
+        g.setColor(new Color(0x02, 0x88, 0x78));
+        g.setStroke(new BasicStroke(2f));
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), lcdH, 10, 10);
+        g.setStroke(new BasicStroke(1f));
+
+        // LCD Header
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g.drawString("YAESU FT-891 VFO DISPLAY", pad + 16, curY + 22);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("FILTER: 3.0kHz | AGC: FAST | IPO: ON | ATT: OFF", pad + 16, curY + 38);
+
+        // VFO-A Frequency (Primary tuned frequency)
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("VFO-A", pad + 16, curY + 70);
+
+        // Digits
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("Monospaced", Font.BOLD, 36));
+        g.drawString("14.074.000", pad + 80, curY + 75);
+
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("MHz", pad + 330, curY + 70);
+
+        // Mode badge (USB-DATA)
+        int modeW = 75;
+        int modeH = 26;
+        g.setColor(new Color(0xFF, 0xB3, 0x00, 50));
+        g.fillRoundRect(WIDTH - pad - modeW - 16, curY + 52, modeW, modeH, 4, 4);
+        g.setColor(COLOR_AMBER);
+        g.drawRoundRect(WIDTH - pad - modeW - 16, curY + 52, modeW, modeH, 4, 4);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("USB-DATA", WIDTH - pad - modeW - 10, curY + 70);
+
+        // VFO-B Frequency (Sub)
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.drawString("VFO-B: 07.074.000 MHz (40m) [LSB]", pad + 16, curY + 104);
+
+        g.setColor(new Color(0x30, 0x40, 0x40));
+        g.drawLine(pad + 16, curY + 116, WIDTH - pad - 16, curY + 116);
+
+        // S-Meter Graphics
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g.drawString("SIG / S-METER", pad + 16, curY + 134);
+
+        // S-Meter Bar Background & Ticks
+        int smX = pad + 110;
+        int smY = curY + 124;
+        int smW = WIDTH - pad * 2 - 130;
+        int smH = 14;
+
+        g.setColor(new Color(0x20, 0x25, 0x25));
+        g.fillRoundRect(smX, smY, smW, smH, 3, 3);
+
+        // Fill S-Meter segments (up to S9 + 10dB)
+        int fillW = (int) (smW * 0.72);
+        for (int b = 0; b < fillW; b += 6) {
+            if (b < smW * 0.55) {
+                g.setColor(COLOR_GREEN); // S1 - S9
+            } else {
+                g.setColor(new Color(0xFF, 0x52, 0x52)); // +10 to +60dB
+            }
+            g.fillRect(smX + b, smY + 2, 4, smH - 4);
+        }
+
+        // S-meter labels
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 9));
+        g.drawString("S1   3   5   7   9   +20  +40dB", smX, curY + 152);
+
+        // Power out and SWR indicators
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("Monospaced", Font.BOLD, 11));
+        g.drawString("PO: 100W   SWR: 1.1", pad + 16, curY + 168);
+
+        curY += lcdH + 14;
+
+        // Card 3: Real-Time CAT Protocol Log / Simulated Port Monitor
+        int catH = 195;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), catH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), catH, 8, 8);
+
+        // Title of CAT monitor
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("YAESU FT-891 CAT PROTOCOL MONITOR", pad + 14, curY + 22);
+
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        g.drawString("Port: /dev/ttyUSB0 (Simulated)", WIDTH - pad - 190, curY + 22);
+
+        // Log Terminal Box
+        int termX = pad + 12;
+        int termY = curY + 32;
+        int termW = WIDTH - pad * 2 - 24;
+        int termH = catH - 44;
+        g.setColor(COLOR_BLACK);
+        g.fillRoundRect(termX, termY, termW, termH, 6, 6);
+        g.setColor(new Color(0x33, 0x33, 0x33));
+        g.drawRoundRect(termX, termY, termW, termH, 6, 6);
+
+        // Serial CAT Packets
+        String[][] catPackets = {
+            {"TX", "FA;", "Poll VFO-A Frequency"},
+            {"RX", "FA00014074000;", "VFO-A = 14.074.000 Hz (20m)"},
+            {"TX", "MD0;", "Poll Operating Mode"},
+            {"RX", "MD01;", "Mode = USB (Upper Sideband)"},
+            {"TX", "SM0;", "Poll S-Meter Signal Strength"},
+            {"RX", "SM0009;", "S-Meter = S9 (+10dB)"},
+            {"TX", "FA00014074000;", "Sync DX Spot CT1BOH to Radio"},
+            {"RX", "FA00014074000;", "Command ACK (Frequency Locked)"}
+        };
+
+        int logY = termY + 18;
+        int rowH = 17;
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        for (String[] pkt : catPackets) {
+            boolean isTx = pkt[0].equals("TX");
+            g.setColor(isTx ? COLOR_BLUE : COLOR_GREEN);
+            g.drawString("[" + pkt[0] + "]", termX + 8, logY);
+
+            g.setColor(COLOR_TEXT_WHITE);
+            g.drawString(pkt[1], termX + 44, logY);
+
+            g.setColor(COLOR_TEXT_MUTED);
+            g.drawString("// " + pkt[2], termX + 170, logY);
+
+            logY += rowH;
+        }
+
+        curY += catH + 14;
+
+        // Card 4: Quick QSY Band & Rig Tuning Controls
+        int ctrlH = HEIGHT - curY - 20;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), ctrlH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), ctrlH, 8, 8);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("QUICK RIG CONTROLS (TUNE & SYNC)", pad + 14, curY + 22);
+
+        // Band Buttons Row
+        String[] bands = {"160m", "80m", "40m", "20m", "15m", "10m", "6m"};
+        int bandPad = pad + 12;
+        int bandBtnW = (WIDTH - pad * 2 - 24 - (bands.length - 1) * 6) / bands.length;
+        int bandBtnH = 34;
+        int bandY = curY + 34;
+
+        for (int i = 0; i < bands.length; i++) {
+            int bx = bandPad + i * (bandBtnW + 6);
+            boolean is20m = bands[i].equals("20m");
+            if (is20m) {
+                drawTealButton(g, bx, bandY, bandBtnW, bandBtnH, bands[i], 12);
+            } else {
+                g.setColor(new Color(0x30, 0x30, 0x30));
+                g.fillRoundRect(bx, bandY, bandBtnW, bandBtnH, 6, 6);
+                g.setColor(COLOR_CARD_BORDER);
+                g.drawRoundRect(bx, bandY, bandBtnW, bandBtnH, 6, 6);
+                g.setColor(COLOR_TEXT_WHITE);
+                g.setFont(new Font("SansSerif", Font.BOLD, 12));
+                int bw = g.getFontMetrics().stringWidth(bands[i]);
+                g.drawString(bands[i], bx + (bandBtnW - bw) / 2, bandY + 21);
+            }
+        }
+
+        // Action Buttons: "Tune to Spot", "Read Status"
+        int actY = bandY + bandBtnH + 12;
+        int actBtnW = (WIDTH - pad * 2 - 24 - 12) / 2;
+        int actBtnH = 42;
+
+        drawTealButton(g, pad + 12, actY, actBtnW, actBtnH, "⚡ Sync Spot to FT-891", 13);
+
+        g.setColor(new Color(0x30, 0x30, 0x30));
+        g.fillRoundRect(pad + 12 + actBtnW + 12, actY, actBtnW, actBtnH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + 12 + actBtnW + 12, actY, actBtnW, actBtnH, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String readText = "🔄 Read Rig Status";
+        int rtw = g.getFontMetrics().stringWidth(readText);
+        g.drawString(readText, pad + 12 + actBtnW + 12 + (actBtnW - rtw) / 2, actY + 26);
+
+        // Active Spot Sync footer
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.drawString("Active Target: ", pad + 14, actY + actBtnH + 22);
+        drawFlag(g, "PT", pad + 95, actY + actBtnH + 10, 18, 12);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g.drawString("CT1BOH @ 14.074.000 MHz (FT8 EU) -> FT-891 VFO-A Locked", pad + 120, actY + actBtnH + 22);
 
         g.dispose();
         ImageIO.write(img, "png", file);
@@ -1098,6 +1418,391 @@ public class ScreenshotGenerator {
         curY += btnH + 12;
 
         drawTealButton(g, pad, curY, WIDTH - (pad * 2), btnH, "Open QRZ Callbook", 16);
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // YAESU FT-891: Dedicated CAT Protocol Serial Monitor
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT891CatProtocolMonitor(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "FT-891 CAT Serial Monitor", true, true);
+
+        int pad = 16;
+        int curY = 94;
+
+        // Port Parameters Header Card
+        int hdrH = 78;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), hdrH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), hdrH, 8, 8);
+
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 16, curY + 16, 10, 10);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        g.drawString("SERIAL CAT: /dev/ttyUSB0 (CP2102 UART)", pad + 34, curY + 26);
+
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("Monospaced", Font.BOLD, 12));
+        g.drawString("38400 BAUD | 8 DATA BITS | 2 STOP BITS | NO PARITY", pad + 16, curY + 48);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("FLOW: RTS/CTS | DTR: ON | RTS: ON | CTS: HIGH", pad + 16, curY + 66);
+
+        curY += hdrH + 12;
+
+        // Serial Terminal Box
+        int termH = HEIGHT - curY - 96;
+        g.setColor(new Color(0x0C, 0x10, 0x10));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), termH, 8, 8);
+        g.setColor(new Color(0x22, 0x33, 0x33));
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), termH, 8, 8);
+
+        // Terminal Title Bar
+        g.setColor(new Color(0x16, 0x1E, 0x1E));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), 28, 8, 8);
+        g.fillRect(pad, curY + 16, WIDTH - (pad * 2), 12);
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("Monospaced", Font.BOLD, 11));
+        g.drawString("CAT PROTOCOL PACKET TRACE (HEX / ASCII)", pad + 12, curY + 18);
+
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        g.drawString("AUTO-SCROLL: ON", WIDTH - pad - 120, curY + 18);
+
+        // Packet Rows
+        String[][] packets = {
+            {"12:35:00.102", "TX", "FA;", "Poll VFO-A Frequency"},
+            {"12:35:00.118", "RX", "FA00014074000;", "VFO-A = 14.074.000 Hz (20m)"},
+            {"12:35:00.130", "TX", "FB;", "Poll VFO-B Frequency"},
+            {"12:35:00.144", "RX", "FB00007074000;", "VFO-B = 7.074.000 Hz (40m)"},
+            {"12:35:00.155", "TX", "MD0;", "Poll Operating Mode"},
+            {"12:35:00.168", "RX", "MD01;", "Mode: USB (Upper Sideband)"},
+            {"12:35:00.180", "TX", "SM0;", "Poll S-Meter Level"},
+            {"12:35:00.196", "RX", "SM0009;", "Signal Strength: S9 (+10dB)"},
+            {"12:35:01.210", "TX", "FA00021074000;", "QSY to 15m Band (21.074 MHz)"},
+            {"12:35:01.232", "RX", "FA00021074000;", "Ack: Frequency Synthesizer Locked"},
+            {"12:35:01.245", "TX", "MD01;", "Set Mode USB"},
+            {"12:35:01.260", "RX", "MD01;", "Ack: Operating Mode Confirmed"},
+            {"12:35:02.100", "TX", "FA00014074000;", "Sync DX Spot CT1BOH to VFO-A"},
+            {"12:35:02.122", "RX", "FA00014074000;", "Ack: VFO-A = 14.074.000 Hz"},
+            {"12:35:03.450", "TX", "TX1;", "PTT Active (Key Transmitter)"},
+            {"12:35:03.468", "RX", "TX1;", "Ack: Transceiver in TX Mode (100W)"},
+            {"12:35:05.800", "TX", "TX0;", "PTT Released (Return to RX)"},
+            {"12:35:05.818", "RX", "TX0;", "Ack: Transceiver in RX Mode"},
+            {"12:35:06.010", "TX", "SM0;", "Poll S-Meter Signal Strength"},
+            {"12:35:06.025", "RX", "SM0008;", "Signal Strength: S8"}
+        };
+
+        int lineY = curY + 46;
+        int rowStep = 18;
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+
+        for (String[] p : packets) {
+            if (lineY + rowStep > curY + termH - 8) break;
+
+            // Timestamp
+            g.setColor(COLOR_TEXT_MUTED);
+            g.drawString(p[0], pad + 10, lineY);
+
+            // Direction badge
+            boolean isTx = p[1].equals("TX");
+            g.setColor(isTx ? COLOR_BLUE : COLOR_GREEN);
+            g.drawString("[" + p[1] + "]", pad + 106, lineY);
+
+            // Data string
+            g.setColor(COLOR_TEXT_WHITE);
+            g.drawString(p[2], pad + 140, lineY);
+
+            // Comment
+            g.setColor(new Color(0x60, 0x80, 0x80));
+            g.drawString("// " + p[3], pad + 256, lineY);
+
+            lineY += rowStep;
+        }
+
+        // Bottom Controls
+        int botY = HEIGHT - 80;
+        int btnW = (WIDTH - pad * 2 - 12) / 2;
+        drawTealButton(g, pad, botY, btnW, 44, "Send Custom CAT", 13);
+
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + btnW + 12, botY, btnW, 44, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + btnW + 12, botY, btnW, 44, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String exp = "Export Trace (.log)";
+        int ew = g.getFontMetrics().stringWidth(exp);
+        g.drawString(exp, pad + btnW + 12 + (btnW - ew) / 2, botY + 27);
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // YAESU FT-891: DX Cluster with Live Rig Sync & QSY
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT891DxClusterQsy(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "CQMiau - Yaesu FT-891 Live", true, false);
+
+        int pad = 16;
+        int curY = 94;
+
+        // Yaesu FT-891 Active Rig Banner
+        int rigH = 50;
+        g.setColor(new Color(0x10, 0x22, 0x20));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), rigH, 8, 8);
+        g.setColor(new Color(0x00, 0xCC, 0x99));
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), rigH, 8, 8);
+
+        // Icon + Rig Status
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 14, curY + 18, 12, 12);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("RIG: YAESU FT-891", pad + 34, curY + 22);
+
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("Monospaced", Font.BOLD, 13));
+        g.drawString("14.074.000 MHz (USB-DATA)", pad + 34, curY + 40);
+
+        // Sync pill badge
+        int syncW = 90;
+        int syncH = 24;
+        int syncX = WIDTH - pad - syncW - 12;
+        g.setColor(new Color(0x00, 0xE6, 0x76, 40));
+        g.fillRoundRect(syncX, curY + 13, syncW, syncH, 12, 12);
+        g.setColor(COLOR_GREEN);
+        g.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g.drawString("VFO-A SYNCED", syncX + 10, curY + 29);
+
+        curY += rigH + 12;
+
+        // Top Buttons (Filter Band & View Log)
+        int gap = 12;
+        int btnW = (WIDTH - (pad * 2) - gap) / 2;
+        int btnH = 42;
+        drawTealButton(g, pad, curY, btnW, btnH, "Filter Band", 14);
+        drawTealButton(g, pad + btnW + gap, curY, btnW, btnH, "View Log", 14);
+
+        curY += btnH + 14;
+
+        // DX Cluster Spots with First Spot Tuned to FT-891
+        String[][] spots = {
+            {"14074.0", "PT", "CT1BOH", "IN51re FT8 +03dB Strong EU", "12:35:12", "TUNED"},
+            {"21074.0", "US", "W1AW", "FN31pr ARRL HQ Special 599", "12:34:40", "TAP TO QSY"},
+            {"28074.0", "JP", "JA1ABC", "PM95 Tokyo FT8 -08dB JA net", "12:33:55", "TAP TO QSY"},
+            {"7074.0", "DE", "DL1XYZ", "JO43 Munich FT8 +01dB EU", "12:33:10", "TAP TO QSY"},
+            {"14205.0", "GB", "M0XYZ", "IO91 London USB 59 loud", "12:32:28", "TAP TO QSY"},
+            {"21285.0", "BR", "PY2AA", "GG66 Sao Paulo South Am 59", "12:31:45", "TAP TO QSY"},
+            {"14020.0", "ES", "EA7K", "IM76 Seville CW 599 CQ DX", "12:30:15", "TAP TO QSY"}
+        };
+
+        for (int i = 0; i < spots.length; i++) {
+            String[] s = spots[i];
+            int itemH = 68;
+            boolean isTuned = s[5].equals("TUNED");
+
+            g.setColor(COLOR_SURFACE);
+            g.fillRoundRect(pad, curY, WIDTH - (pad * 2), itemH, 6, 6);
+
+            if (isTuned) {
+                g.setColor(COLOR_TEAL);
+                g.setStroke(new BasicStroke(2f));
+                g.drawRoundRect(pad, curY, WIDTH - (pad * 2), itemH, 6, 6);
+                g.setStroke(new BasicStroke(1f));
+            } else {
+                g.setColor(COLOR_CARD_BORDER);
+                g.drawRoundRect(pad, curY, WIDTH - (pad * 2), itemH, 6, 6);
+            }
+
+            // Flag + Callsign
+            drawFlag(g, s[1], pad + 12, curY + 12, 26, 17);
+
+            g.setColor(COLOR_TEXT_WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 17));
+            g.drawString(s[2], pad + 46, curY + 26);
+
+            // Frequency
+            g.setColor(isTuned ? COLOR_AMBER : COLOR_TEAL);
+            g.setFont(new Font("SansSerif", Font.BOLD, 17));
+            FontMetrics fm = g.getFontMetrics();
+            int freqW = fm.stringWidth(s[0]);
+            g.drawString(s[0], WIDTH - pad - 12 - freqW, curY + 26);
+
+            // Comment & Time
+            g.setColor(COLOR_TEXT_GREY);
+            g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            g.drawString(s[3], pad + 12, curY + 50);
+
+            // Rig sync status pill
+            if (isTuned) {
+                int pillW = 92;
+                int pillH = 18;
+                int pillX = WIDTH - pad - 12 - pillW;
+                int pillY = curY + 40;
+                g.setColor(new Color(0x00, 0xE6, 0x76, 40));
+                g.fillRoundRect(pillX, pillY, pillW, pillH, 4, 4);
+                g.setColor(COLOR_GREEN);
+                g.setFont(new Font("SansSerif", Font.BOLD, 9));
+                g.drawString("TUNED ON FT-891", pillX + 6, pillY + 13);
+            } else {
+                g.setColor(COLOR_TEXT_MUTED);
+                g.setFont(new Font("SansSerif", Font.PLAIN, 11));
+                int tw = g.getFontMetrics().stringWidth(s[4]);
+                g.drawString(s[4], WIDTH - pad - 12 - tw, curY + 52);
+            }
+
+            curY += itemH + 8;
+            if (curY + itemH > HEIGHT - 30) break;
+        }
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // YAESU FT-891: CQ Mode & Auto-Tune
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT891CqMode(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "CQ Mode - Yaesu FT-891", false, true);
+
+        int pad = 20;
+        int curY = 96;
+
+        // Banner: Auto-Tune Active
+        int banH = 46;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), banH, 6, 6);
+        g.setColor(COLOR_TEAL);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), banH, 6, 6);
+
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 14, curY + 17, 12, 12);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("AUTO-TUNE ACTIVE: YAESU FT-891", pad + 36, curY + 24);
+
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("CAT Control: VFO-A & PTT Automated via USB", pad + 36, curY + 38);
+
+        curY += banH + 16;
+
+        // Call Sign input row
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("Call Sign", pad, curY + 18);
+
+        int inputW = WIDTH - pad - 100;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        drawFlag(g, "PT", pad + 90, curY + 9, 24, 16);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        g.drawString("CT1BOH", pad + 122, curY + 24);
+
+        curY += 46;
+
+        // Freq input row
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("Freq", pad, curY + 18);
+
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("14074.0", pad + 94, curY + 24);
+
+        curY += 46;
+
+        // Signal Reports
+        int spinW = (WIDTH - (pad * 2) - 16) / 2;
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.drawString("Receive S Number", pad, curY + 12);
+        g.drawString("Send S Number", pad + spinW + 16, curY + 12);
+
+        curY += 18;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("599", pad + 16, curY + 25);
+
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + spinW + 16, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + spinW + 16, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("599", pad + spinW + 32, curY + 25);
+
+        curY += 56;
+
+        // Radio Status Box
+        int rigBoxH = 110;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), rigBoxH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), rigBoxH, 8, 8);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("YAESU FT-891 LIVE TELEMETRY", pad + 14, curY + 22);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        g.drawString("VFO-A: 14.074.000 Hz  |  MODE: USB-DATA", pad + 14, curY + 44);
+        g.drawString("POWER: 100 Watts      |  SWR:  1.1:1", pad + 14, curY + 64);
+        g.drawString("S-METER: S9 (+10dB)   |  CAT:  ACK OK", pad + 14, curY + 84);
+
+        curY += rigBoxH + 18;
+
+        // Action Buttons
+        drawTealButton(g, pad, curY, WIDTH - (pad * 2), 48, "⚡ Tune Radio to Spot & Call CQ", 15);
+        curY += 58;
+
+        g.setColor(new Color(0x30, 0x30, 0x30));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), 48, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), 48, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        String logQso = "📝 Save QSO to Logbook";
+        int lqw = g.getFontMetrics().stringWidth(logQso);
+        g.drawString(logQso, pad + (WIDTH - (pad * 2) - lqw) / 2, curY + 30);
 
         g.dispose();
         ImageIO.write(img, "png", file);
