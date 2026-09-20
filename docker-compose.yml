@@ -97,6 +97,35 @@ services:
       - "host.docker.internal:host-gateway"
     command: ["all"]
 
+  # Service to run Android Studio with complete GUI (in-browser noVNC and native VNC)
+  android-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile.android-studio
+    image: miaudx-android-studio:latest
+    container_name: miaudx-android-studio
+    environment:
+      - RESOLUTION=1600x900
+      - DISPLAY=:1
+    ports:
+      - "6080:6080" # Web Browser GUI (noVNC)
+      - "5900:5900" # Native VNC Client
+    volumes:
+      - .:/workspace
+      - studio-gradle-cache:/root/.gradle
+      - studio-config:/root/.config/Google
+      - studio-share:/root/.local/share/Google
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    stdin_open: true
+    tty: true
+
 volumes:
   gradle-cache:
     name: miaudx-gradle-cache
+  studio-gradle-cache:
+    name: miaudx-studio-gradle-cache
+  studio-config:
+    name: miaudx-studio-config
+  studio-share:
+    name: miaudx-studio-share
