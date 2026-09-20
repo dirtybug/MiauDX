@@ -7,16 +7,30 @@ echo "===================================================="
 
 TARGET="${1:-all}"
 
-# Initialize and verify Yaesu FT-891 Radio Simulator
-if command -v python3 >/dev/null 2>&1 && [ -f "./tools/ft891_simulator.py" ]; then
-    echo "[RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification..."
-    python3 ./tools/ft891_simulator.py --test
-    echo "[RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!"
+# Initialize and verify Yaesu Radio Simulators (FT-891 & FT-857)
+if command -v python3 >/dev/null 2>&1; then
+    if [ -f "./tools/ft891_simulator.py" ]; then
+        echo "[RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification..."
+        python3 ./tools/ft891_simulator.py --test
+        echo "[RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!"
+    fi
+    if [ -f "./tools/ft857_simulator.py" ]; then
+        echo "[RADIO-SIM] Starting Yaesu FT-857 Radio Simulator verification..."
+        python3 ./tools/ft857_simulator.py --test
+        echo "[RADIO-SIM] Yaesu FT-857 Radio Simulator verified and ready!"
+    fi
     echo ""
-elif command -v python >/dev/null 2>&1 && [ -f "./tools/ft891_simulator.py" ]; then
-    echo "[RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification..."
-    python ./tools/ft891_simulator.py --test
-    echo "[RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!"
+elif command -v python >/dev/null 2>&1; then
+    if [ -f "./tools/ft891_simulator.py" ]; then
+        echo "[RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification..."
+        python ./tools/ft891_simulator.py --test
+        echo "[RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!"
+    fi
+    if [ -f "./tools/ft857_simulator.py" ]; then
+        echo "[RADIO-SIM] Starting Yaesu FT-857 Radio Simulator verification..."
+        python ./tools/ft857_simulator.py --test
+        echo "[RADIO-SIM] Yaesu FT-857 Radio Simulator verified and ready!"
+    fi
     echo ""
 fi
 

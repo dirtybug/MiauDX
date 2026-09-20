@@ -8,7 +8,14 @@ import com.Runner.CQMiau.comPort.ComPortConfigActivity;
 public class RadioFactory {
 
     public static RadioBase getRadio() {
-        RadioType type = ComPortConfigActivity.getInstance().getRadio();
+        return createRadio(ComPortConfigActivity.getInstance().getRadio());
+    }
+
+    public static RadioBase getRadio(RadioType type) {
+        return createRadio(type);
+    }
+
+    public static RadioBase createRadio(RadioType type) {
         switch (type) {
             case TT588:
                 return new TT588();

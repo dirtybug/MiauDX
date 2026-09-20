@@ -7,43 +7,38 @@ echo ====================================================
 set TARGET=%1
 if "%TARGET%"=="" set TARGET=all
 
-REM Initialize and verify Yaesu FT-891 Radio Simulator
+REM Initialize and verify Yaesu Radio Simulators (FT-891 & FT-857)
 where python >nul 2>nul
 if %errorlevel% equ 0 (
     if exist "%~dp0tools\ft891_simulator.py" (
         echo [RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification...
         python "%~dp0tools\ft891_simulator.py" --test
         echo [RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!
-        echo.
     )
+    if exist "%~dp0tools\ft857_simulator.py" (
+        echo [RADIO-SIM] Starting Yaesu FT-857 Radio Simulator verification...
+        python "%~dp0tools\ft857_simulator.py" --test
+        echo [RADIO-SIM] Yaesu FT-857 Radio Simulator verified and ready!
+    )
+    echo.
 )
 
 REM Determine whether to run directly or via WSL2
 where wsl >nul 2>nul
 if %errorlevel% equ 0 (
-    wsl -l -v | findstr /i "docker-desktop" | findstr /i "Running" >nul 2>nul
-    if %errorlevel% neq 0 (
-        echo [INFO] Windows Docker Desktop is not active. Running via WSL2 Docker engine...
-        wsl -d Ubuntu --cd "%~dp0" -e ./run-docker-tests.sh %TARGET%
-        goto :SUMMARY
-    )
+    echo [INFO] Running via WSL2 Docker engine for reliable volume mount...
+    wsl -d Ubuntu --cd "%~dp0" -e ./run-docker-tests.sh %TARGET%
+    exit /b %errorlevel%
 )
 
 where docker >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [ERROR] Docker not found in PATH. Please install Docker Desktop.
+    echo [ERROR] Docker not found in PATH. Please install Docker Desktop or WSL2.
     exit /b 1
 )
 
 docker ps >nul 2>nul
 if %errorlevel% equ 0 goto :DOCKER_READY
-
-where wsl >nul 2>nul
-if %errorlevel% equ 0 (
-    echo [INFO] Windows Docker Desktop not active. Running via WSL Docker engine...
-    wsl -d Ubuntu --cd "%~dp0" -e ./run-docker-tests.sh %TARGET%
-    goto :SUMMARY
-)
 
 echo [ERROR] Docker Desktop is not running or the engine is still initializing.
 echo Please open Docker Desktop and wait for "Engine running" status before running tests.

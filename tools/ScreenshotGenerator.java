@@ -65,12 +65,22 @@ public class ScreenshotGenerator {
         File radiosFt891Dir = new File(outputDir, "radios/yaesu_ft891");
         radiosFt891Dir.mkdirs();
 
+        File yaesuFt857Dir = new File(outputDir, "yaesu_ft857");
+        yaesuFt857Dir.mkdirs();
+
+        File ft857AliasDir = new File(outputDir, "FT857");
+        ft857AliasDir.mkdirs();
+
+        File radiosFt857Dir = new File(outputDir, "radios/yaesu_ft857");
+        radiosFt857Dir.mkdirs();
+
         System.out.println("=====================================================");
         System.out.println("       MiauDX Visual Frame Screenshot Generator      ");
         System.out.println("=====================================================");
         System.out.println("Output root folder: " + outputDir.getAbsolutePath());
         System.out.println("General folder:     " + generalDir.getAbsolutePath());
         System.out.println("Yaesu FT-891 folder:" + yaesuFt891Dir.getAbsolutePath());
+        System.out.println("Yaesu FT-857 folder:" + yaesuFt857Dir.getAbsolutePath());
 
         try {
             // -------------------------------------------------------------
@@ -165,6 +175,42 @@ public class ScreenshotGenerator {
                 if (src.isFile()) {
                     copyFile(src, new File(ft891AliasDir, src.getName()));
                     copyFile(src, new File(radiosFt891Dir, src.getName()));
+                }
+            }
+
+            // -------------------------------------------------------------
+            // DEDICATED YAESU FT-857 / FT-857D SCREENSHOTS (yaesu_ft857/ and FT857/)
+            // -------------------------------------------------------------
+            // 1. FT-857D CAT Rig Control & LCD Display
+            File ft857_1 = new File(yaesuFt857Dir, "01_yaesu_ft857_cat_rig_control.png");
+            renderFrameYaesuFT857Simulation(ft857_1);
+            copyFile(ft857_1, new File(yaesuFt857Dir, "frame_01_cat_rig_control.png"));
+
+            // 2. FT-857D CAT Protocol Monitor (5-byte binary serial trace)
+            File ft857_2 = new File(yaesuFt857Dir, "02_yaesu_ft857_cat_protocol_monitor.png");
+            renderFrameYaesuFT857CatProtocolMonitor(ft857_2);
+            copyFile(ft857_2, new File(yaesuFt857Dir, "frame_02_cat_protocol_monitor.png"));
+
+            // 3. FT-857D COM Port Configuration (9600, 8N2)
+            File ft857_3 = new File(yaesuFt857Dir, "03_yaesu_ft857_com_port_config.png");
+            renderFrameYaesuFT857ComPortConfig(ft857_3);
+            copyFile(ft857_3, new File(yaesuFt857Dir, "frame_03_com_port_config.png"));
+
+            // 4. FT-857D DX Cluster Live QSY & VFO Sync
+            File ft857_4 = new File(yaesuFt857Dir, "04_yaesu_ft857_dx_cluster_qsy.png");
+            renderFrameYaesuFT857DxClusterQsy(ft857_4);
+            copyFile(ft857_4, new File(yaesuFt857Dir, "frame_04_dx_cluster_qsy.png"));
+
+            // 5. FT-857D CQ Mode & Auto-Tune
+            File ft857_5 = new File(yaesuFt857Dir, "05_yaesu_ft857_cq_mode.png");
+            renderFrameYaesuFT857CqMode(ft857_5);
+            copyFile(ft857_5, new File(yaesuFt857Dir, "frame_05_cq_mode.png"));
+
+            // Copy all Yaesu FT-857 screenshots to alias directories
+            for (File src : yaesuFt857Dir.listFiles()) {
+                if (src.isFile()) {
+                    copyFile(src, new File(ft857AliasDir, src.getName()));
+                    copyFile(src, new File(radiosFt857Dir, src.getName()));
                 }
             }
 
@@ -1792,6 +1838,671 @@ public class ScreenshotGenerator {
 
         // Action Buttons
         drawTealButton(g, pad, curY, WIDTH - (pad * 2), 48, "⚡ Tune Radio to Spot & Call CQ", 15);
+        curY += 58;
+
+        g.setColor(new Color(0x30, 0x30, 0x30));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), 48, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), 48, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        String logQso = "📝 Save QSO to Logbook";
+        int lqw = g.getFontMetrics().stringWidth(logQso);
+        g.drawString(logQso, pad + (WIDTH - (pad * 2) - lqw) / 2, curY + 30);
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // =============================================================
+    // YAESU FT-857 / FT-857D DEDICATED SCREENSHOT RENDERERS
+    // =============================================================
+
+    // -------------------------------------------------------------
+    // 1. FT-857D CAT Rig Control & LCD Display
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT857Simulation(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "Yaesu FT-857D CAT Control", true, true);
+
+        int pad = 16;
+        int curY = 94;
+
+        // Card 1: Rig Connection Banner
+        int bannerH = 72;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), bannerH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), bannerH, 8, 8);
+
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 16, curY + 18, 12, 12);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("YAESU FT-857D (HF/VHF/UHF Transceiver)", pad + 36, curY + 28);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        g.drawString("Status: CONNECTED (Simulated USB-CAT | 9600 baud, 8N2)", pad + 36, curY + 48);
+
+        int badgeW = 68;
+        int badgeH = 20;
+        int badgeX = WIDTH - pad - badgeW - 12;
+        g.setColor(new Color(0x00, 0xE6, 0x76, 40));
+        g.fillRoundRect(badgeX, curY + 14, badgeW, badgeH, 4, 4);
+        g.setColor(COLOR_GREEN);
+        g.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g.drawString("VERIFIED", badgeX + 11, curY + 28);
+
+        curY += bannerH + 14;
+
+        // Card 2: Yaesu FT-857D Dot-Matrix Amber LCD VFO Display
+        int lcdH = 175;
+        g.setColor(new Color(0x18, 0x14, 0x0C));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), lcdH, 10, 10);
+        g.setColor(new Color(0xAA, 0x70, 0x10));
+        g.setStroke(new BasicStroke(2f));
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), lcdH, 10, 10);
+        g.setStroke(new BasicStroke(1f));
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g.drawString("YAESU FT-857D DOT-MATRIX LCD DISPLAY", pad + 16, curY + 22);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("DSP: DNR/DNF/DBF | IPO: ON | ATT: OFF | NB: ON", pad + 16, curY + 38);
+
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("VFO-A", pad + 16, curY + 70);
+
+        g.setColor(new Color(0xFF, 0xAA, 0x00));
+        g.setFont(new Font("Monospaced", Font.BOLD, 36));
+        g.drawString("14.074.000", pad + 80, curY + 75);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("MHz", pad + 330, curY + 70);
+
+        int modeW = 75;
+        int modeH = 26;
+        g.setColor(new Color(0xFF, 0xB3, 0x00, 50));
+        g.fillRoundRect(WIDTH - pad - modeW - 16, curY + 52, modeW, modeH, 4, 4);
+        g.setColor(COLOR_AMBER);
+        g.drawRoundRect(WIDTH - pad - modeW - 16, curY + 52, modeW, modeH, 4, 4);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("USB-DATA", WIDTH - pad - modeW - 10, curY + 70);
+
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.drawString("VFO-B: 07.074.000 MHz (40m) [LSB] | V/U: 144/430 Ready", pad + 16, curY + 104);
+
+        g.setColor(new Color(0x44, 0x33, 0x18));
+        g.drawLine(pad + 16, curY + 116, WIDTH - pad - 16, curY + 116);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g.drawString("SIG / S-METER", pad + 16, curY + 134);
+
+        int smX = pad + 110;
+        int smY = curY + 124;
+        int smW = WIDTH - pad * 2 - 130;
+        int smH = 14;
+
+        g.setColor(new Color(0x25, 0x20, 0x15));
+        g.fillRoundRect(smX, smY, smW, smH, 3, 3);
+
+        int fillW = (int) (smW * 0.72);
+        for (int b = 0; b < fillW; b += 6) {
+            if (b < smW * 0.55) {
+                g.setColor(COLOR_AMBER);
+            } else {
+                g.setColor(new Color(0xFF, 0x44, 0x44));
+            }
+            g.fillRect(smX + b, smY + 2, 4, smH - 4);
+        }
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 9));
+        g.drawString("S1   3   5   7   9   +20  +40dB", smX, curY + 152);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("Monospaced", Font.BOLD, 11));
+        g.drawString("PO: 100W (HF) / 50W (VHF)   SWR: 1.1", pad + 16, curY + 168);
+
+        curY += lcdH + 14;
+
+        // Card 3: 5-Byte Binary CAT Protocol Monitor
+        int catH = 195;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), catH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), catH, 8, 8);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("YAESU FT-857D 5-BYTE BINARY CAT PROTOCOL", pad + 14, curY + 22);
+
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        g.drawString("Port: /dev/ttyUSB0 (9600 8N2)", WIDTH - pad - 190, curY + 22);
+
+        int termX = pad + 12;
+        int termY = curY + 32;
+        int termW = WIDTH - pad * 2 - 24;
+        int termH = catH - 44;
+        g.setColor(COLOR_BLACK);
+        g.fillRoundRect(termX, termY, termW, termH, 6, 6);
+        g.setColor(new Color(0x33, 0x33, 0x33));
+        g.drawRoundRect(termX, termY, termW, termH, 6, 6);
+
+        String[][] catPackets = {
+            {"TX", "01 40 74 00 01", "Opcode 0x01: Set VFO-A (14.074 MHz)"},
+            {"RX", "00",             "Ack: Frequency Synthesizer Locked"},
+            {"TX", "01 00 00 00 07", "Opcode 0x07: Set Mode USB (0x01)"},
+            {"RX", "00",             "Ack: Operating Mode Confirmed"},
+            {"TX", "00 00 00 00 03", "Opcode 0x03: Read Freq & Mode Status"},
+            {"RX", "01 40 74 00 01", "Returns 14.074.000 Hz, Mode USB"},
+            {"TX", "00 00 00 00 E7", "Opcode 0xE7: Read RX Status / S-Meter"},
+            {"RX", "09",             "Signal Level S9 (+10dB)"}
+        };
+
+        int logY = termY + 18;
+        int rowH = 17;
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        for (String[] pkt : catPackets) {
+            boolean isTx = pkt[0].equals("TX");
+            g.setColor(isTx ? COLOR_BLUE : COLOR_AMBER);
+            g.drawString("[" + pkt[0] + "]", termX + 8, logY);
+
+            g.setColor(COLOR_TEXT_WHITE);
+            g.drawString(pkt[1], termX + 44, logY);
+
+            g.setColor(COLOR_TEXT_MUTED);
+            g.drawString("// " + pkt[2], termX + 175, logY);
+
+            logY += rowH;
+        }
+
+        curY += catH + 14;
+
+        // Card 4: Quick QSY Band & Rig Tuning Controls (including VHF/UHF)
+        int ctrlH = HEIGHT - curY - 20;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), ctrlH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), ctrlH, 8, 8);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("QUICK RIG CONTROLS (ALL-BAND HF/VHF/UHF)", pad + 14, curY + 22);
+
+        String[] bands = {"160m", "80m", "40m", "20m", "15m", "10m", "6m", "2m", "70cm"};
+        int bandPad = pad + 12;
+        int bandBtnW = (WIDTH - pad * 2 - 24 - (bands.length - 1) * 4) / bands.length;
+        int bandBtnH = 34;
+        int bandY = curY + 34;
+
+        for (int i = 0; i < bands.length; i++) {
+            int bx = bandPad + i * (bandBtnW + 4);
+            boolean is20m = bands[i].equals("20m");
+            if (is20m) {
+                drawTealButton(g, bx, bandY, bandBtnW, bandBtnH, bands[i], 11);
+            } else {
+                g.setColor(new Color(0x30, 0x30, 0x30));
+                g.fillRoundRect(bx, bandY, bandBtnW, bandBtnH, 6, 6);
+                g.setColor(COLOR_CARD_BORDER);
+                g.drawRoundRect(bx, bandY, bandBtnW, bandBtnH, 6, 6);
+                g.setColor(COLOR_TEXT_WHITE);
+                g.setFont(new Font("SansSerif", Font.BOLD, 11));
+                int bw = g.getFontMetrics().stringWidth(bands[i]);
+                g.drawString(bands[i], bx + (bandBtnW - bw) / 2, bandY + 21);
+            }
+        }
+
+        int actY = bandY + bandBtnH + 12;
+        int actBtnW = (WIDTH - pad * 2 - 24 - 12) / 2;
+        int actBtnH = 42;
+
+        drawTealButton(g, pad + 12, actY, actBtnW, actBtnH, "⚡ Sync Spot to FT-857D", 13);
+
+        g.setColor(new Color(0x30, 0x30, 0x30));
+        g.fillRoundRect(pad + 12 + actBtnW + 12, actY, actBtnW, actBtnH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + 12 + actBtnW + 12, actY, actBtnW, actBtnH, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String readText = "🔄 Read Rig Status";
+        int rtw = g.getFontMetrics().stringWidth(readText);
+        g.drawString(readText, pad + 12 + actBtnW + 12 + (actBtnW - rtw) / 2, actY + 26);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.drawString("Active Target: ", pad + 14, actY + actBtnH + 22);
+        drawFlag(g, "PT", pad + 95, actY + actBtnH + 10, 18, 12);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g.drawString("CT1BOH @ 14.074.000 MHz (FT8 EU) -> FT-857D VFO-A Locked", pad + 120, actY + actBtnH + 22);
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // 2. FT-857D Dedicated CAT Protocol Serial Monitor
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT857CatProtocolMonitor(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "FT-857D CAT Serial Monitor", true, true);
+
+        int pad = 16;
+        int curY = 94;
+
+        int hdrH = 78;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), hdrH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), hdrH, 8, 8);
+
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 16, curY + 16, 10, 10);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        g.drawString("SERIAL CAT: /dev/ttyUSB0 (CP2102 / CH340)", pad + 34, curY + 26);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("Monospaced", Font.BOLD, 12));
+        g.drawString("9600 BAUD | 8 DATA BITS | 2 STOP BITS | NO PARITY", pad + 16, curY + 48);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("PROTOCOL: 5-BYTE BINARY YAESU | RTS/DTR: HANDSHAKE", pad + 16, curY + 66);
+
+        curY += hdrH + 12;
+
+        int termH = HEIGHT - curY - 96;
+        g.setColor(new Color(0x0C, 0x0E, 0x0A));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), termH, 8, 8);
+        g.setColor(new Color(0x33, 0x2A, 0x18));
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), termH, 8, 8);
+
+        g.setColor(new Color(0x1E, 0x18, 0x10));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), 28, 8, 8);
+        g.fillRect(pad, curY + 16, WIDTH - (pad * 2), 12);
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("Monospaced", Font.BOLD, 11));
+        g.drawString("FT-857 5-BYTE PACKET STREAM (HEX OPCODE)", pad + 12, curY + 18);
+
+        g.setColor(COLOR_TEXT_MUTED);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        g.drawString("LOGGING: ACTIVE", WIDTH - pad - 120, curY + 18);
+
+        String[][] packets = {
+            {"12:35:00.100", "TX", "01 40 74 00 01", "Opcode 0x01: Set Freq (14.074.000 Hz)"},
+            {"12:35:00.115", "RX", "00",             "Ack: VFO-A Frequency Locked"},
+            {"12:35:00.130", "TX", "01 00 00 00 07", "Opcode 0x07: Set Mode USB (0x01)"},
+            {"12:35:00.145", "RX", "00",             "Ack: Operating Mode USB Confirmed"},
+            {"12:35:00.160", "TX", "00 00 00 00 03", "Opcode 0x03: Read Freq & Mode Status"},
+            {"12:35:00.180", "RX", "01 40 74 00 01", "Returns 14.074.000 Hz, Mode USB"},
+            {"12:35:00.200", "TX", "00 00 00 00 E7", "Opcode 0xE7: Read RX S-Meter"},
+            {"12:35:00.215", "RX", "09",             "Signal Level S9 (+10dB)"},
+            {"12:35:01.300", "TX", "02 10 74 00 01", "Opcode 0x01: QSY to 15m (21.074 MHz)"},
+            {"12:35:01.320", "RX", "00",             "Ack: 15m Synthesizer Locked"},
+            {"12:35:02.000", "TX", "00 00 00 00 08", "Opcode 0x08: PTT ON (Transmitter Keyed)"},
+            {"12:35:02.018", "RX", "00",             "Ack: Transceiver in TX Mode (100W)"},
+            {"12:35:04.500", "TX", "00 00 00 00 88", "Opcode 0x88: PTT OFF (Return to RX)"},
+            {"12:35:04.515", "RX", "00",             "Ack: Transceiver in RX Mode"},
+            {"12:35:05.100", "TX", "00 00 00 00 E7", "Opcode 0xE7: Read RX S-Meter"},
+            {"12:35:05.115", "RX", "08",             "Signal Level S8"}
+        };
+
+        int lineY = curY + 46;
+        int rowStep = 18;
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+
+        for (String[] p : packets) {
+            if (lineY + rowStep > curY + termH - 8) break;
+
+            g.setColor(COLOR_TEXT_MUTED);
+            g.drawString(p[0], pad + 10, lineY);
+
+            boolean isTx = p[1].equals("TX");
+            g.setColor(isTx ? COLOR_BLUE : COLOR_AMBER);
+            g.drawString("[" + p[1] + "]", pad + 106, lineY);
+
+            g.setColor(COLOR_TEXT_WHITE);
+            g.drawString(p[2], pad + 140, lineY);
+
+            g.setColor(new Color(0x90, 0x80, 0x60));
+            g.drawString("// " + p[3], pad + 270, lineY);
+
+            lineY += rowStep;
+        }
+
+        int botY = HEIGHT - 80;
+        int btnW = (WIDTH - pad * 2 - 12) / 2;
+        drawTealButton(g, pad, botY, btnW, 44, "Send 5-Byte Opcode", 13);
+
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + btnW + 12, botY, btnW, 44, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + btnW + 12, botY, btnW, 44, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String exp = "Export Trace (.log)";
+        int ew = g.getFontMetrics().stringWidth(exp);
+        g.drawString(exp, pad + btnW + 12 + (btnW - ew) / 2, botY + 27);
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // 3. FT-857D COM Port Configuration (9600, 8N2)
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT857ComPortConfig(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "Open Radio - Yaesu FT-857D", false, true);
+
+        int pad = 20;
+        int curY = 96;
+
+        String[][] fields = {
+            {"Baud Rate", "9600"},
+            {"Data Bits", "8"},
+            {"Stop Bits", "2"},
+            {"Parity", "None"},
+            {"Flow Control", "None"},
+            {"Select Radio", "Yaesu FT-857D"},
+            {"USB Device", "CP2102 USB to UART Bridge (/dev/bus/usb/001/003)"}
+        };
+
+        for (String[] f : fields) {
+            g.setColor(COLOR_TEXT_WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 14));
+            g.drawString(f[0], pad, curY + 16);
+
+            int spinY = curY + 24;
+            int spinH = 40;
+            g.setColor(COLOR_SURFACE);
+            g.fillRoundRect(pad, spinY, WIDTH - (pad * 2), spinH, 6, 6);
+            g.setColor(COLOR_CARD_BORDER);
+            g.drawRoundRect(pad, spinY, WIDTH - (pad * 2), spinH, 6, 6);
+
+            g.setColor(f[0].equals("Select Radio") ? COLOR_AMBER : COLOR_TEAL);
+            g.setFont(new Font("SansSerif", Font.BOLD, 15));
+            g.drawString(f[1], pad + 14, spinY + 25);
+
+            int arrX = WIDTH - pad - 20;
+            int arrY = spinY + 16;
+            g.setColor(COLOR_TEXT_GREY);
+            Polygon p = new Polygon();
+            p.addPoint(arrX, arrY);
+            p.addPoint(arrX + 10, arrY);
+            p.addPoint(arrX + 5, arrY + 8);
+            g.fillPolygon(p);
+
+            curY += 72;
+        }
+
+        drawTealButton(g, pad, HEIGHT - 130, WIDTH - (pad * 2), 44, "Refresh Device List", 15);
+
+        g.setColor(COLOR_TEAL);
+        g.fillRoundRect(pad, HEIGHT - 76, WIDTH - (pad * 2), 48, 8, 8);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        String ap = "Connect FT-857D";
+        int apw = g.getFontMetrics().stringWidth(ap);
+        g.drawString(ap, pad + (WIDTH - (pad * 2) - apw) / 2, HEIGHT - 76 + 29);
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // 4. FT-857D DX Cluster Live QSY & VFO Sync
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT857DxClusterQsy(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "CQMiau - Yaesu FT-857D Live", true, false);
+
+        int pad = 16;
+        int curY = 94;
+
+        int rigH = 50;
+        g.setColor(new Color(0x1F, 0x1A, 0x0E));
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), rigH, 8, 8);
+        g.setColor(COLOR_AMBER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), rigH, 8, 8);
+
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 14, curY + 18, 12, 12);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("RIG: YAESU FT-857D", pad + 34, curY + 22);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("Monospaced", Font.BOLD, 13));
+        g.drawString("14.074.000 MHz (USB-DATA)", pad + 34, curY + 40);
+
+        int syncW = 90;
+        int syncH = 24;
+        int syncX = WIDTH - pad - syncW - 12;
+        g.setColor(new Color(0x00, 0xE6, 0x76, 40));
+        g.fillRoundRect(syncX, curY + 13, syncW, syncH, 12, 12);
+        g.setColor(COLOR_GREEN);
+        g.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g.drawString("VFO-A SYNCED", syncX + 10, curY + 29);
+
+        curY += rigH + 12;
+
+        int gap = 12;
+        int btnW = (WIDTH - (pad * 2) - gap) / 2;
+        int btnH = 42;
+        drawTealButton(g, pad, curY, btnW, btnH, "Filter Band", 14);
+        drawTealButton(g, pad + btnW + gap, curY, btnW, btnH, "View Log", 14);
+
+        curY += btnH + 14;
+
+        String[][] spots = {
+            {"14074.0", "PT", "CT1BOH", "IN51re FT8 +03dB Strong EU", "12:35:12", "TUNED"},
+            {"21074.0", "US", "W1AW", "FN31pr ARRL HQ Special 599", "12:34:40", "TAP TO QSY"},
+            {"28074.0", "JP", "JA1ABC", "PM95 Tokyo FT8 -08dB JA net", "12:33:55", "TAP TO QSY"},
+            {"7074.0", "DE", "DL1XYZ", "JO43 Munich FT8 +01dB EU", "12:33:10", "TAP TO QSY"},
+            {"14205.0", "GB", "M0XYZ", "IO91 London USB 59 loud", "12:32:28", "TAP TO QSY"},
+            {"21285.0", "BR", "PY2AA", "GG66 Sao Paulo South Am 59", "12:31:45", "TAP TO QSY"},
+            {"144200.0", "ES", "EA7K", "IM76 2m USB 599 CQ DX", "12:30:15", "TAP TO QSY"}
+        };
+
+        for (int i = 0; i < spots.length; i++) {
+            String[] s = spots[i];
+            int itemH = 68;
+            boolean isTuned = s[5].equals("TUNED");
+
+            g.setColor(COLOR_SURFACE);
+            g.fillRoundRect(pad, curY, WIDTH - (pad * 2), itemH, 6, 6);
+
+            if (isTuned) {
+                g.setColor(COLOR_AMBER);
+                g.setStroke(new BasicStroke(2f));
+                g.drawRoundRect(pad, curY, WIDTH - (pad * 2), itemH, 6, 6);
+                g.setStroke(new BasicStroke(1f));
+            } else {
+                g.setColor(COLOR_CARD_BORDER);
+                g.drawRoundRect(pad, curY, WIDTH - (pad * 2), itemH, 6, 6);
+            }
+
+            drawFlag(g, s[1], pad + 12, curY + 12, 26, 17);
+
+            g.setColor(COLOR_TEXT_WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 17));
+            g.drawString(s[2], pad + 46, curY + 26);
+
+            g.setColor(isTuned ? COLOR_AMBER : COLOR_TEAL);
+            g.setFont(new Font("SansSerif", Font.BOLD, 17));
+            FontMetrics fm = g.getFontMetrics();
+            int freqW = fm.stringWidth(s[0]);
+            g.drawString(s[0], WIDTH - pad - 12 - freqW, curY + 26);
+
+            g.setColor(COLOR_TEXT_GREY);
+            g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            g.drawString(s[3], pad + 12, curY + 50);
+
+            if (isTuned) {
+                int pillW = 92;
+                int pillH = 18;
+                int pillX = WIDTH - pad - 12 - pillW;
+                int pillY = curY + 40;
+                g.setColor(new Color(0xFF, 0xB3, 0x00, 40));
+                g.fillRoundRect(pillX, pillY, pillW, pillH, 4, 4);
+                g.setColor(COLOR_AMBER);
+                g.setFont(new Font("SansSerif", Font.BOLD, 9));
+                g.drawString("TUNED ON FT-857", pillX + 6, pillY + 13);
+            } else {
+                g.setColor(COLOR_TEXT_MUTED);
+                g.setFont(new Font("SansSerif", Font.PLAIN, 11));
+                int tw = g.getFontMetrics().stringWidth(s[4]);
+                g.drawString(s[4], WIDTH - pad - 12 - tw, curY + 52);
+            }
+
+            curY += itemH + 8;
+            if (curY + itemH > HEIGHT - 30) break;
+        }
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // 5. FT-857D CQ Mode & Auto-Tune
+    // -------------------------------------------------------------
+    private static void renderFrameYaesuFT857CqMode(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+        g.setColor(COLOR_BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+        drawAppBar(g, "CQ Mode - Yaesu FT-857D", false, true);
+
+        int pad = 20;
+        int curY = 96;
+
+        int banH = 46;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), banH, 6, 6);
+        g.setColor(COLOR_AMBER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), banH, 6, 6);
+
+        g.setColor(COLOR_GREEN);
+        g.fillOval(pad + 14, curY + 17, 12, 12);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("AUTO-TUNE ACTIVE: YAESU FT-857D", pad + 36, curY + 24);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("CAT Control: 5-Byte Binary VFO & PTT Automated via USB", pad + 36, curY + 38);
+
+        curY += banH + 16;
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("Call Sign", pad, curY + 18);
+
+        int inputW = WIDTH - pad - 100;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        drawFlag(g, "PT", pad + 90, curY + 9, 24, 16);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        g.drawString("CT1BOH", pad + 122, curY + 24);
+
+        curY += 46;
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("Freq", pad, curY + 18);
+
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + 80, curY, inputW, 36, 6, 6);
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("14074.0", pad + 94, curY + 24);
+
+        curY += 46;
+
+        int spinW = (WIDTH - (pad * 2) - 16) / 2;
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.drawString("Receive S Number", pad, curY + 12);
+        g.drawString("Send S Number", pad + spinW + 16, curY + 12);
+
+        curY += 18;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("599", pad + 16, curY + 25);
+
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad + spinW + 16, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad + spinW + 16, curY, spinW, 38, 6, 6);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.drawString("599", pad + spinW + 32, curY + 25);
+
+        curY += 56;
+
+        int rigBoxH = 110;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(pad, curY, WIDTH - (pad * 2), rigBoxH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(pad, curY, WIDTH - (pad * 2), rigBoxH, 8, 8);
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("YAESU FT-857D LIVE TELEMETRY", pad + 14, curY + 22);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        g.drawString("VFO-A: 14.074.000 Hz  |  MODE: USB-DATA", pad + 14, curY + 44);
+        g.drawString("POWER: 100 Watts (HF) |  SWR:  1.1:1", pad + 14, curY + 64);
+        g.drawString("S-METER: S9 (+10dB)   |  CAT:  ACK 0x00 OK", pad + 14, curY + 84);
+
+        curY += rigBoxH + 18;
+
+        drawTealButton(g, pad, curY, WIDTH - (pad * 2), 48, "⚡ Tune FT-857D to Spot & Call CQ", 15);
         curY += 58;
 
         g.setColor(new Color(0x30, 0x30, 0x30));

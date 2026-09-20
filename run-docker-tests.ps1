@@ -6,30 +6,37 @@ param (
 Write-Host "====================================================" -ForegroundColor Cyan
 Write-Host "====================================================" -ForegroundColor Cyan
 
-# Initialize and verify Yaesu FT-891 Radio Simulator
+# Initialize and verify Yaesu Radio Simulators (FT-891 & FT-857)
 if (Get-Command python -ErrorAction SilentlyContinue) {
     if (Test-Path ".\tools\ft891_simulator.py") {
         Write-Host "[RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification..." -ForegroundColor Cyan
         python .\tools\ft891_simulator.py --test
         Write-Host "[RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!" -ForegroundColor Green
-        Write-Host ""
     }
+    if (Test-Path ".\tools\ft857_simulator.py") {
+        Write-Host "[RADIO-SIM] Starting Yaesu FT-857 Radio Simulator verification..." -ForegroundColor Cyan
+        python .\tools\ft857_simulator.py --test
+        Write-Host "[RADIO-SIM] Yaesu FT-857 Radio Simulator verified and ready!" -ForegroundColor Green
+    }
+    Write-Host ""
+}
+
+# Prefer WSL2 Docker engine when available for robust unicode path handling
+if (Get-Command wsl -ErrorAction SilentlyContinue) {
+    Write-Host "[INFO] Running via WSL2 Docker engine for reliable volume mount..." -ForegroundColor Cyan
+    wsl -d Ubuntu --cd (Get-Location).Path -e ./run-docker-tests.sh $Target
+    exit $LASTEXITCODE
 }
 
 # Check if Docker exists
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Host "[ERROR] Docker not found in PATH. Please install Docker Desktop." -ForegroundColor Red
+    Write-Host "[ERROR] Docker not found in PATH. Please install Docker Desktop or WSL2." -ForegroundColor Red
     exit 1
 }
 
 # Check if Docker daemon is running
 docker info >$null 2>&1
 if ($LASTEXITCODE -ne 0) {
-    if (Get-Command wsl -ErrorAction SilentlyContinue) {
-        Write-Host "[INFO] Windows Docker Desktop not active. Running via WSL Docker engine..." -ForegroundColor Yellow
-        wsl -d Ubuntu --cd (Get-Location).Path -e ./run-docker-tests.sh $Target
-        exit $LASTEXITCODE
-    }
     Write-Host "[ERROR] Docker Desktop is not running or the engine is still initializing." -ForegroundColor Red
     exit 1
 }

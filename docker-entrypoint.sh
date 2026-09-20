@@ -89,41 +89,54 @@ case "$ACTION" in
 
     unit|test)
         echo "====================================================="
-        echo ">>> Initializing and Starting Yaesu FT-891 Radio Simulator..."
+        echo ">>> Initializing and Starting Yaesu Radio Simulators (FT-891 & FT-857)..."
         echo "====================================================="
-        SIM_PID=""
-        if command -v python3 >/dev/null 2>&1 && [ -f "tools/ft891_simulator.py" ]; then
-            echo "[RADIO-SIM] Running FT-891 CAT Protocol Simulator Self-Test..."
-            python3 tools/ft891_simulator.py --test
-            echo "[RADIO-SIM] Starting background Yaesu FT-891 CAT Radio Simulator (TCP 127.0.0.1:8910)..."
-            python3 tools/ft891_simulator.py 8910 > /tmp/ft891_simulator.log 2>&1 &
-            SIM_PID=$!
-            sleep 1
-            if ps -p $SIM_PID > /dev/null 2>&1; then
-                echo "✓ [RADIO-SIM] Yaesu FT-891 Radio Simulator running on port 8910 (PID: $SIM_PID)"
+        SIM_891_PID=""
+        SIM_857_PID=""
+        if command -v python3 >/dev/null 2>&1; then
+            if [ -f "tools/ft891_simulator.py" ]; then
+                echo "[RADIO-SIM] Running Yaesu FT-891 CAT Protocol Simulator Self-Test..."
+                python3 tools/ft891_simulator.py --test
+                python3 tools/ft891_simulator.py 8910 > /tmp/ft891_simulator.log 2>&1 &
+                SIM_891_PID=$!
+                echo "✓ [RADIO-SIM] Yaesu FT-891 Simulator running on port 8910 (PID: $SIM_891_PID)"
             fi
-        elif command -v python >/dev/null 2>&1 && [ -f "tools/ft891_simulator.py" ]; then
-            echo "[RADIO-SIM] Running FT-891 CAT Protocol Simulator Self-Test..."
-            python tools/ft891_simulator.py --test
-            echo "[RADIO-SIM] Starting background Yaesu FT-891 CAT Radio Simulator (TCP 127.0.0.1:8910)..."
-            python tools/ft891_simulator.py 8910 > /tmp/ft891_simulator.log 2>&1 &
-            SIM_PID=$!
-            sleep 1
-            if ps -p $SIM_PID > /dev/null 2>&1; then
-                echo "✓ [RADIO-SIM] Yaesu FT-891 Radio Simulator running on port 8910 (PID: $SIM_PID)"
+            if [ -f "tools/ft857_simulator.py" ]; then
+                echo "[RADIO-SIM] Running Yaesu FT-857 CAT Protocol Simulator Self-Test..."
+                python3 tools/ft857_simulator.py --test
+                python3 tools/ft857_simulator.py 8570 > /tmp/ft857_simulator.log 2>&1 &
+                SIM_857_PID=$!
+                echo "✓ [RADIO-SIM] Yaesu FT-857 Simulator running on port 8570 (PID: $SIM_857_PID)"
             fi
-        else
-            echo "[RADIO-SIM] Radio CAT simulation running via JUnit SimulatedFT891 in JVM."
+        elif command -v python >/dev/null 2>&1; then
+            if [ -f "tools/ft891_simulator.py" ]; then
+                echo "[RADIO-SIM] Running Yaesu FT-891 CAT Protocol Simulator Self-Test..."
+                python tools/ft891_simulator.py --test
+                python tools/ft891_simulator.py 8910 > /tmp/ft891_simulator.log 2>&1 &
+                SIM_891_PID=$!
+                echo "✓ [RADIO-SIM] Yaesu FT-891 Simulator running on port 8910 (PID: $SIM_891_PID)"
+            fi
+            if [ -f "tools/ft857_simulator.py" ]; then
+                echo "[RADIO-SIM] Running Yaesu FT-857 CAT Protocol Simulator Self-Test..."
+                python tools/ft857_simulator.py --test
+                python tools/ft857_simulator.py 8570 > /tmp/ft857_simulator.log 2>&1 &
+                SIM_857_PID=$!
+                echo "✓ [RADIO-SIM] Yaesu FT-857 Simulator running on port 8570 (PID: $SIM_857_PID)"
+            fi
         fi
 
         echo ""
-        echo ">>> Running Unit Tests for MiauDX / com.Runner.CQMiau (including FT891SimulationTest)..."
+        echo ">>> Running Unit Tests for MiauDX / com.Runner.CQMiau (FT891SimulationTest + FT857DSimulationTest)..."
         ./gradlew test -PversionName="${APP_VERSION_NAME:-1.07}" -PversionCode="${APP_VERSION_CODE:-107}" --info --stacktrace
         GRADLE_STATUS=$?
 
-        if [ -n "$SIM_PID" ]; then
-            echo "[RADIO-SIM] Stopping background Yaesu FT-891 Radio Simulator (PID: $SIM_PID)..."
-            kill "$SIM_PID" 2>/dev/null || true
+        if [ -n "$SIM_891_PID" ]; then
+            echo "[RADIO-SIM] Stopping Yaesu FT-891 Radio Simulator (PID: $SIM_891_PID)..."
+            kill "$SIM_891_PID" 2>/dev/null || true
+        fi
+        if [ -n "$SIM_857_PID" ]; then
+            echo "[RADIO-SIM] Stopping Yaesu FT-857 Radio Simulator (PID: $SIM_857_PID)..."
+            kill "$SIM_857_PID" 2>/dev/null || true
         fi
 
         if [ $GRADLE_STATUS -ne 0 ]; then
