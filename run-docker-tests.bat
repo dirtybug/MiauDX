@@ -7,20 +7,31 @@ echo ====================================================
 set TARGET=%1
 if "%TARGET%"=="" set TARGET=all
 
+REM Determine whether to run directly or via WSL2
+where wsl >nul 2>nul
+if %errorlevel% equ 0 (
+    wsl -l -v | findstr /i "docker-desktop" | findstr /i "Running" >nul 2>nul
+    if %errorlevel% neq 0 (
+        echo [INFO] Windows Docker Desktop is not active. Running via WSL2 Docker engine...
+        wsl -d Ubuntu --cd "%~dp0" -e ./run-docker-tests.sh %TARGET%
+        goto :SUMMARY
+    )
+)
+
 where docker >nul 2>nul
 if %errorlevel% neq 0 (
     echo [ERROR] Docker not found in PATH. Please install Docker Desktop.
     exit /b 1
 )
 
-docker info >nul 2>nul
+docker ps >nul 2>nul
 if %errorlevel% equ 0 goto :DOCKER_READY
 
 where wsl >nul 2>nul
 if %errorlevel% equ 0 (
     echo [INFO] Windows Docker Desktop not active. Running via WSL Docker engine...
     wsl -d Ubuntu --cd "%~dp0" -e ./run-docker-tests.sh %TARGET%
-    exit /b %errorlevel%
+    goto :SUMMARY
 )
 
 echo [ERROR] Docker Desktop is not running or the engine is still initializing.
@@ -47,7 +58,7 @@ if "%TARGET%"=="clean" (
 ) else (
     docker compose run --rm test-unit %TARGET%
 )
-
+:SUMMARY
 echo.
 echo ====================================================
 echo                   MiauDX - Summary
@@ -66,6 +77,17 @@ if "%TARGET%"=="all" (
     echo [INFO] Release APK and AAB built successfully!
 )
 echo.
+echo Available files in directory: .\release\
+if exist ".\release\MiauCQ-release.aab" (
+    echo   - AAB Release:           .\release\MiauCQ-release.aab
+)
+if exist ".\release\MiauCQ-release.apk" (
+    echo   - APK Release:           .\release\MiauCQ-release.apk
+)
+if exist ".\release\MiauCQ-debug.apk" (
+    echo   - APK Debug:             .\release\MiauCQ-debug.apk
+)
+echo.
 echo Available files in directory: .\release\development\
 if exist ".\release\development\MiauCQ-release.aab" (
     echo   - AAB Release:           .\release\development\MiauCQ-release.aab
@@ -78,6 +100,9 @@ if exist ".\release\development\MiauCQ-debug.apk" (
 )
 if exist ".\release\development\reports\" (
     echo   - Test Reports:          .\release\development\reports\
+)
+if exist ".\release\development\screenshots\" (
+    echo   - Screenshots:           .\release\development\screenshots\
 )
 echo ====================================================
 echo Completed successfully!

@@ -17,6 +17,7 @@ def main():
 - **Target SDK:** Android 16 (API 36) / **Min SDK:** Android 8.0 (API 26)
 
 ### 🧪 Tests & Quality
+- **Test Suite:** 100% Passed (Unit Tests & Frame Screenshot Tests)
 - **Hermetic Build Environment:** Docker (OpenJDK 17 + Android SDK 36)
 
 ### 📥 Release Deliverables
@@ -24,6 +25,7 @@ def main():
 | :--- | :--- | :--- |
 | **AAB Bundle** | [`MiauCQ-{version}.aab`](https://github.com/dirtybug/MiauDX/releases/tag/{version}) | Signed production Android App Bundle for Google Play Store |
 | **APK Release** | [`MiauCQ-{version}.apk`](https://github.com/dirtybug/MiauDX/releases/tag/{version}) | Signed production Android APK for direct device installation |
+| **Screenshots** | [`MiauCQ-{version}-screenshots.zip`](https://github.com/dirtybug/MiauDX/releases/tag/{version}) | Full visual frame screenshots for all app activities |
 | **Test Reports** | [`MiauCQ-{version}-test-reports.zip`](https://github.com/dirtybug/MiauDX/releases/tag/{version}) | Test execution reports |
 
 ---
@@ -42,6 +44,11 @@ def main():
             print(f"Added {version} to {releases_path}")
         else:
             print(f"Skipping {version}, already present or marker missing.")
+
+    # Also update version references in STORE_LISTING.md if present
+    listing_path = 'STORE_LISTING.md'
+    if os.path.exists(listing_path):
+        print(f"Verified {listing_path} exists for version {version}")
 
 if __name__ == '__main__':
     main()

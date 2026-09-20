@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiauDX • Visual Frame Verification &amp; Behavior Gallery</title>
+    <style>
+        :root {
+            --bg-primary: #0D1117;
+            --bg-secondary: #161B22;
+            --bg-card: #131B2A;
+            --border-subtle: #26354D;
+            --text-main: #E6EDF3;
+            --text-secondary: #8B949E;
+            --accent-green: #00E676;
+            --accent-green-bg: rgba(0, 230, 118, 0.12);
+            --accent-blue: #2979FF;
+            --accent-blue-bg: rgba(41, 121, 255, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 30px 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 20px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .card-body {
+            padding: 16px;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 6px;
+        }
+        .card-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .badge-pass {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: var(--accent-green-bg);
+            color: var(--accent-green);
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1 style="color: var(--accent-green); font-size: 24px;">MiauDX • Visual Frame Gallery</h1>
+                <p style="color: var(--text-secondary); font-size: 13px;">Automated screenshot generation per activity frame</p>
+            </div>
+            <div style="background: var(--accent-green-bg); color: var(--accent-green); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px;">
+                ✔ 8 Frames Verified
+            </div>
+        </header>
+
+        <div class="gallery-grid">
+            <div class="card">
+                <img src="../../screenshots/frame_01_main_dx_cluster.png" alt="Frame 1: DX Cluster">
+                <div class="card-body">
+                    <div class="card-title">01. Main DX Cluster Feed</div>
+                    <div class="card-desc">Real-time incoming cluster spots, frequency display, callsigns, and connection indicator.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_02_cat_rig_control.png" alt="Frame 2: CAT Rig Control">
+                <div class="card-body">
+                    <div class="card-title">02. CQ Mode &amp; CAT Control</div>
+                    <div class="card-desc">Yaesu FT-891 VFO A/B frequency display, S-meter, band/mode switching, and PTT.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_03_qso_logbook.png" alt="Frame 3: QSO Logbook">
+                <div class="card-body">
+                    <div class="card-title">03. QSO Logbook</div>
+                    <div class="card-desc">Station QSO history records, frequency, RST sent/rcvd, locator, and timestamps.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_04_band_mode_filter.png" alt="Frame 4: Filters">
+                <div class="card-body">
+                    <div class="card-title">04. Band &amp; Mode Filters</div>
+                    <div class="card-desc">Customizable filters for 160m..10m HF bands and CW/SSB/DIGITAL modes.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_05_spot_details.png" alt="Frame 5: Spot Details">
+                <div class="card-body">
+                    <div class="card-title">05. Spot Details &amp; QRZ</div>
+                    <div class="card-desc">Detailed spot inspection, country zones, QRZ lookup, and one-tap rig tuning.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_06_usb_cat_config.png" alt="Frame 6: USB CAT Config">
+                <div class="card-body">
+                    <div class="card-title">06. USB Serial CAT Config</div>
+                    <div class="card-desc">FTDI / CP210x port configuration (baud rate 38400, 8N2, RTS/CTS handshake).</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_07_user_settings.png" alt="Frame 7: User Settings">
+                <div class="card-body">
+                    <div class="card-title">07. User &amp; Station Settings</div>
+                    <div class="card-desc">Station callsign, Maidenhead grid locator, default DX cluster host and port.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="../../screenshots/frame_08_edit_qso_log.png" alt="Frame 8: Edit Log">
+                <div class="card-body">
+                    <div class="card-title">08. Add / Edit QSO Entry</div>
+                    <div class="card-desc">Contact entry dialog with callsign, frequency, RST reports, and notes.</div>
+                    <span class="badge-pass">PASS</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

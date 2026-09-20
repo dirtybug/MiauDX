@@ -24,7 +24,7 @@ public abstract class RadioBase {
     protected void sendAndReceiveCommand(String command) {
         ComPortManager.getInstance().queueCommand(command);
     }
-     byte[] toBCD(long value) {
+    protected byte[] toBCD(long value) {
         ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN);
         for (int i = 4 - 1; i >= 0; i--) {
             buffer.put((byte) ((value % 10) | ((value / 10 % 10) << 4)));
@@ -33,7 +33,7 @@ public abstract class RadioBase {
         return buffer.array();
     }
 
-     byte[] to_bcd_be(String value) {
+    protected byte[] to_bcd_be(String value) {
         // Validate that the input is numeric
         if (!value.matches("\\d+")) {
             throw new IllegalArgumentException("Input string must be numeric: " + value);

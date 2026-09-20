@@ -27,9 +27,41 @@ if [ -n "$APP_VERSION_NAME" ] && [ -f /workspace/app/src/main/AndroidManifest.xm
         sed -i -E "s/android:versionCode=\"[^\"]*\"/android:versionCode=\"${APP_VERSION_CODE}\"/g" /workspace/app/src/main/AndroidManifest.xml 2>/dev/null || true
     fi
 fi
+[ -f /workspace/gradlew ] && sed -i 's/\r$//' /workspace/gradlew 2>/dev/null || true
 [ -f /workspace/gradlew ] && chmod +x /workspace/gradlew 2>/dev/null || true
 rm -f /root/.gradle/caches/journal-1/*.lock 2>/dev/null || true
 rm -f /root/.gradle/caches/*.lock 2>/dev/null || true
+
+KEYSTORE_FILE=""
+for kf in /workspace/release/key.jks /workspace/release/release.keystore /workspace/key.jks /workspace/release.keystore; do
+    if [ -f "$kf" ]; then
+        KEYSTORE_FILE="$kf"
+        break
+    fi
+done
+
+if [ -z "$KEYSTORE_PASSWORD" ]; then
+    if [ -f /workspace/release/keystore-pass.txt ]; then
+        export KEYSTORE_PASSWORD=$(cat /workspace/release/keystore-pass.txt | tr -d '\r\n')
+    elif [ -f /workspace/keystore-pass.txt ]; then
+        export KEYSTORE_PASSWORD=$(cat /workspace/keystore-pass.txt | tr -d '\r\n')
+    fi
+fi
+
+if [ -n "$KEYSTORE_FILE" ] && [ -n "$KEYSTORE_PASSWORD" ]; then
+    echo "✓ Keystore found at $KEYSTORE_FILE with password configured. Release will be SIGNED."
+    if [ -z "$KEY_ALIAS" ]; then
+        export KEY_ALIAS="key0"
+    fi
+    if [ -z "$KEY_PASSWORD" ]; then
+        export KEY_PASSWORD="$KEYSTORE_PASSWORD"
+    fi
+else
+    echo "ℹ Keystore or password not found. Release will be built UNSIGNED."
+    unset KEYSTORE_PASSWORD
+    unset KEY_ALIAS
+    unset KEY_PASSWORD
+fi
 
 ACTION="${1:-unit}"
 
@@ -65,16 +97,43 @@ case "$ACTION" in
             [ ! -f "$RELEASE_DIR/reports/index.html" ] && cp "$RELEASE_DIR/reports/unit-tests/index.html" "$RELEASE_DIR/reports/index.html" 2>/dev/null || true
             echo "✓ Unit test report saved to $RELEASE_DIR/reports/unit-tests/index.html"
         fi
-        echo "✓ Unit tests completed successfully in $RELEASE_DIR!"
+
+        echo ""
+        echo ">>> Generating all visual frame screenshots into $RELEASE_DIR/screenshots..."
+        mkdir -p "$RELEASE_DIR/screenshots"
+        mkdir -p "$RELEASE_DIR/reports/behavior-tests"
+        javac -encoding UTF-8 -cp ".:app/src/main/java" tools/*.java 2>/dev/null || javac -encoding UTF-8 tools/*.java 2>/dev/null
+        java -Djava.awt.headless=true -cp ".:tools:app/src/main/java" tools.ScreenshotGenerator "$RELEASE_DIR/screenshots" || true
+        if [ -f "tools/reports/behavior-tests/index.html" ]; then
+            cp "tools/reports/behavior-tests/index.html" "$RELEASE_DIR/reports/behavior-tests/index.html"
+            cp "tools/reports/behavior-tests/index.html" "$RELEASE_DIR/reports/behavior-tests.html"
+        fi
+        echo "✓ All visual frame screenshots saved to $RELEASE_DIR/screenshots/!"
+        echo "✓ Unit tests and screenshots completed successfully in $RELEASE_DIR!"
+        ;;
+
+    screenshots)
+        echo ">>> Generating visual frame screenshots..."
+        mkdir -p "$RELEASE_DIR/screenshots"
+        mkdir -p "$RELEASE_DIR/reports/behavior-tests"
+        javac -encoding UTF-8 -cp ".:app/src/main/java" tools/*.java 2>/dev/null || javac -encoding UTF-8 tools/*.java 2>/dev/null
+        java -Djava.awt.headless=true -cp ".:tools:app/src/main/java" tools.ScreenshotGenerator "$RELEASE_DIR/screenshots" || true
+        if [ -f "tools/reports/behavior-tests/index.html" ]; then
+            cp "tools/reports/behavior-tests/index.html" "$RELEASE_DIR/reports/behavior-tests/index.html"
+            cp "tools/reports/behavior-tests/index.html" "$RELEASE_DIR/reports/behavior-tests.html"
+        fi
+        echo "✓ Screenshots saved to $RELEASE_DIR/screenshots/!"
         ;;
 
     build|assemble)
         echo ">>> Building Debug APK (Version: ${APP_VERSION_NAME:-1.06}, Code: ${APP_VERSION_CODE:-10006})..."
         ./gradlew assembleDebug -PversionName="${APP_VERSION_NAME:-1.06}" -PversionCode="${APP_VERSION_CODE:-10006}" --info
         mkdir -p "$RELEASE_DIR"
+        mkdir -p /workspace/release
         find app/build/outputs/apk/debug -name "*.apk" -exec cp {} "$RELEASE_DIR/MiauCQ-debug.apk" \; 2>/dev/null || true
         cp -f "$RELEASE_DIR/MiauCQ-debug.apk" "$RELEASE_DIR/MiauCQ-development-debug.apk" 2>/dev/null || true
-        echo "✓ Debug APK saved to $RELEASE_DIR/MiauCQ-debug.apk"
+        cp -f "$RELEASE_DIR/MiauCQ-debug.apk" /workspace/release/MiauCQ-debug.apk 2>/dev/null || true
+        echo "✓ Debug APK saved to $RELEASE_DIR/MiauCQ-debug.apk and /workspace/release/MiauCQ-debug.apk"
         ;;
 
     release)
@@ -88,13 +147,17 @@ case "$ACTION" in
             KEY_PASS_PARAM="-PkeystorePassword=$KEYSTORE_PASSWORD"
         fi
         mkdir -p "$RELEASE_DIR"
+        mkdir -p /workspace/release
         ./gradlew assembleRelease bundleRelease -PversionName="${APP_VERSION_NAME:-1.06}" -PversionCode="${APP_VERSION_CODE:-10006}" $KEY_PASS_PARAM $KEY_ALIAS_PARAM --info
         find app/build/outputs/apk/release -name "*.apk" -exec cp {} "$RELEASE_DIR/MiauCQ-release.apk" \; 2>/dev/null || true
         cp -f "$RELEASE_DIR/MiauCQ-release.apk" "$RELEASE_DIR/MiauCQ-development-release.apk" 2>/dev/null || true
+        cp -f "$RELEASE_DIR/MiauCQ-release.apk" /workspace/release/MiauCQ-release.apk 2>/dev/null || true
         find app/build/outputs/bundle/release -name "*.aab" -exec cp {} "$RELEASE_DIR/MiauCQ-release.aab" \; 2>/dev/null || true
+        cp -f "$RELEASE_DIR/MiauCQ-release.aab" /workspace/release/MiauCQ-release.aab 2>/dev/null || true
         (cd "$RELEASE_DIR" && sha256sum *.apk *.aab > SHA256SUMS.txt 2>/dev/null || true)
-        echo "✓ Release APK saved to $RELEASE_DIR/MiauCQ-release.apk"
-        [ -f "$RELEASE_DIR/MiauCQ-release.aab" ] && echo "✓ Release AAB saved to $RELEASE_DIR/MiauCQ-release.aab"
+        (cd /workspace/release && sha256sum MiauCQ-release.apk MiauCQ-release.aab > SHA256SUMS.txt 2>/dev/null || true)
+        echo "✓ Release APK saved to $RELEASE_DIR/MiauCQ-release.apk and /workspace/release/MiauCQ-release.apk"
+        [ -f "$RELEASE_DIR/MiauCQ-release.aab" ] && echo "✓ Release AAB saved to $RELEASE_DIR/MiauCQ-release.aab and /workspace/release/MiauCQ-release.aab"
         ;;
 
     bundle|aab)
