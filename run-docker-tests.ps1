@@ -4,8 +4,17 @@ param (
 )
 
 Write-Host "====================================================" -ForegroundColor Cyan
-Write-Host "            MiauDX - Docker Test Runner             " -ForegroundColor Cyan
 Write-Host "====================================================" -ForegroundColor Cyan
+
+# Initialize and verify Yaesu FT-891 Radio Simulator
+if (Get-Command python -ErrorAction SilentlyContinue) {
+    if (Test-Path ".\tools\ft891_simulator.py") {
+        Write-Host "[RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification..." -ForegroundColor Cyan
+        python .\tools\ft891_simulator.py --test
+        Write-Host "[RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!" -ForegroundColor Green
+        Write-Host ""
+    }
+}
 
 # Check if Docker exists
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {

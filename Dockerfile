@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libx11-6 \
     file \
     sed \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure developer convenience aliases

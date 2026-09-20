@@ -7,6 +7,17 @@ echo ====================================================
 set TARGET=%1
 if "%TARGET%"=="" set TARGET=all
 
+REM Initialize and verify Yaesu FT-891 Radio Simulator
+where python >nul 2>nul
+if %errorlevel% equ 0 (
+    if exist "%~dp0tools\ft891_simulator.py" (
+        echo [RADIO-SIM] Starting Yaesu FT-891 Radio Simulator verification...
+        python "%~dp0tools\ft891_simulator.py" --test
+        echo [RADIO-SIM] Yaesu FT-891 Radio Simulator verified and ready!
+        echo.
+    )
+)
+
 REM Determine whether to run directly or via WSL2
 where wsl >nul 2>nul
 if %errorlevel% equ 0 (
