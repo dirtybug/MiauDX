@@ -58,7 +58,7 @@ jobs:
           fi
 
           # Calculate integer versionCode matching Google Play sequence:
-          # 104 (1.04) -> 105 (1.05) -> 106 (1.06) -> 107 (1.07)
+          # 104 (1.04) -> 105 (1.05) -> 106 (1.06) -> 107 (1.07) -> 108 (1.08)
           if [[ "$PLAY_VERSION_NAME" =~ ^([0-9]+)\.([0-9]+)$ ]]; then
             MAJ=$((10#${BASH_REMATCH[1]}))
             MIN=$((10#${BASH_REMATCH[2]}))
