@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">CQMiau</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="open_radio">Open Radio</string>
+    <string name="user_settings">User settings</string>
+    <string name="options">Options</string>
+    <string name="donate">Donate</string>
+    <string name="enter_time_and_date">Enter Time and Date</string>
+    <string name="send_spot">Send Spot</string>
+    <string name="open_qrz">Open QRZ</string>
+    <string name="set_frequency">Set Frequency</string>
+    <string name="save_to_log_book">Save to Log Book</string>
+    <string name="receive_s_value">Receive S-Value</string>
+    <string name="send_s_value">Send S-Value</string>
+    <string name="time">Time</string>
+    <string name="frequency">Frequency</string>
+    <string name="call_sign">Call Sign</string>
+    <string name="location">Location</string>
+    <string name="log_book">Log Book</string>
+    <string name="add_to_log">Add To Log</string>
+    <string name="save_changes">Save Changes</string>
+</resources>

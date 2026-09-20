@@ -1,0 +1,135 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.Runner.CQMiau'
+    compileSdk 36
+    buildToolsVersion "36.0.0"
+
+    defaultConfig {
+        applicationId "com.Runner.CQMiau"
+        minSdk 26
+        targetSdk 36
+
+        def defaultCode = 10006
+        def defaultName = "1.06"
+
+        def appVersionName = project.hasProperty('versionName') ? project.property('versionName').toString() : (System.getenv("APP_VERSION_NAME") ?: defaultName)
+        if (appVersionName.startsWith("v")) {
+            appVersionName = appVersionName.substring(1)
+        }
+
+        def appVersionCode = project.hasProperty('versionCode') ? project.property('versionCode').toString().toInteger() : (System.getenv("APP_VERSION_CODE") ? System.getenv("APP_VERSION_CODE").toInteger() : defaultCode)
+
+        versionCode appVersionCode
+        versionName appVersionName
+
+        resValue "mipmap", "ic_launcher", "@mipmap/ic_launcher"
+        resValue "string", "app_version_name", "\"${appVersionName}\""
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            def passFile = rootProject.file("release/keystore-pass.txt")
+            if (!passFile.exists()) passFile = rootProject.file("keystore-pass.txt")
+            if (!passFile.exists()) passFile = file("keystore-pass.txt")
+            def passFromFile = passFile.exists() ? passFile.text.trim() : null
+
+            def keystorePropsFile = rootProject.file("release/keystore.properties")
+            if (!keystorePropsFile.exists()) keystorePropsFile = rootProject.file("keystore.properties")
+            def appPropsFile = file("keystore.properties")
+            def keyProps = new Properties()
+            if (keystorePropsFile.exists()) {
+                keyProps.load(new FileInputStream(keystorePropsFile))
+            } else if (appPropsFile.exists()) {
+                keyProps.load(new FileInputStream(appPropsFile))
+            }
+
+            def finalPassword = passFromFile ?: (keyProps.getProperty("storePassword") ?: (project.hasProperty("keystorePassword") ? project.property("keystorePassword").toString() : System.getenv("KEYSTORE_PASSWORD")))
+            def finalKeyPassword = passFromFile ?: (keyProps.getProperty("keyPassword") ?: (project.hasProperty("keyPassword") ? project.property("keyPassword").toString() : (System.getenv("KEY_PASSWORD") ?: finalPassword)))
+
+            def candidateFiles = [
+                rootProject.file("release/key.jks"),
+                rootProject.file("release/release.keystore"),
+                rootProject.file("key.jks"),
+                rootProject.file("release.keystore"),
+                file("key.jks"),
+                file("release.keystore"),
+                file("release/release.keystore")
+            ]
+            if (keyProps.getProperty("storeFile")) {
+                candidateFiles.add(0, rootProject.file(keyProps.getProperty("storeFile")))
+                candidateFiles.add(1, file(keyProps.getProperty("storeFile")))
+            }
+
+            def storeF = candidateFiles.find { it != null && it.exists() }
+            def defaultAlias = (storeF?.name?.endsWith(".jks") ? "key0" : "miaudx")
+            def alias = (project.hasProperty("keyAlias") ? project.property("keyAlias").toString() : null) ?: (System.getenv("KEY_ALIAS") ?: (keyProps.getProperty("keyAlias") ?: defaultAlias))
+
+            if (storeF != null && storeF.exists() && finalPassword) {
+                storeFile storeF
+                storePassword finalPassword
+                keyAlias alias
+                keyPassword finalKeyPassword
+                v1SigningEnabled true
+                v2SigningEnabled true
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            resValue "mipmap", "ic_launcher", "@mipmap/ic_launcher"
+        }
+        release {
+            def passFile = rootProject.file("release/keystore-pass.txt")
+            if (!passFile.exists()) passFile = rootProject.file("keystore-pass.txt")
+            def candidateFiles = [
+                rootProject.file("release/key.jks"),
+                rootProject.file("release/release.keystore"),
+                rootProject.file("key.jks"),
+                rootProject.file("release.keystore")
+            ]
+            def storeF = candidateFiles.find { it != null && it.exists() }
+
+            def hasKey = (passFile != null && passFile.exists() && passFile.text.trim().length() > 0) || project.hasProperty("keystorePassword") || System.getenv("KEYSTORE_PASSWORD") != null
+            def hasKeystore = storeF != null && storeF.exists()
+
+            if (hasKey && hasKeystore) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig null
+            }
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            resValue "mipmap", "ic_launcher", "@mipmap/ic_launcher"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'commons-net:commons-net:3.9.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.github.felHR85:UsbSerial:6.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.8.5'
+    implementation 'androidx.navigation:navigation-ui:2.8.5'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+}
