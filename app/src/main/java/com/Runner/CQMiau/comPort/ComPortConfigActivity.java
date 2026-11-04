@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.Runner.CQMiau.R;
+import com.Runner.CQMiau.WindowInsetsHelper;
 import com.Runner.CQMiau.radios.RadioType;
 import com.felhr.usbserial.UsbSerialInterface;
 
@@ -94,6 +95,7 @@ public class ComPortConfigActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_com_port_config);
+        WindowInsetsHelper.apply(this);
         instance = this;
 
         // Initialize spinners

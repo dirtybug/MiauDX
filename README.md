@@ -27,8 +27,22 @@ Play Store: [Miau CQ on Google Play](https://play.google.com/store/apps/details?
 - 🎛 **CAT rig control** (FT-891 tested, other Yaesu and Icom rigs supported)  
 - ⏱ **Frequency management** from cluster to rig in one tap  
 - 🌙 **Dark/Light themes** (optional)  
-- 🔌 **USB connection support** for CAT cables (via FTDI / CP210x / CH34x USB-to-Serial)  
 - 🔔 **Notifications** when a desired callsign or band appears  
+
+---
+
+## 📻 Powered by Rádio Escola
+
+<p align="center">
+  <img src="app/src/main/res/drawable/ic_radio_escola.png" alt="Rádio Escola Logo" width="80" height="80" />
+</p>
+
+**Miau CQ** is proudly **Powered by [Rádio Escola](https://radioescola.pt)** — Portugal\'s free, open-source platform dedicated to amateur radio exam preparation (ANACOM Categories 1, 2, and 3).
+
+### 💖 Apoiar / Donate via PayPal
+Rádio Escola and Miau CQ are free, community-driven, and maintained by volunteers. Your donations help cover server hosting, domain fees, and continuous open-source development for the ham radio community:
+- 💳 **[Doar via PayPal / Donate via PayPal (Rádio Escola)](https://www.paypal.me/radioescola)**
+- 🌐 **[Ver campanha de donativos em radioescola.pt](https://radioescola.pt/donativos)**
 
 ---
 

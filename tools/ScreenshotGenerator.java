@@ -140,6 +140,13 @@ public class ScreenshotGenerator {
             copyFile(f8Spot, new File(outputDir, "frame_05_spot_details.png"));
             copyFile(f8Spot, new File(outputDir, "frame_08_edit_qso_log.png"));
 
+            // Frame 9: About Dialog & Radio Escola (dialog_about.xml)
+            File f9About = new File(generalDir, "frame_09_about.png");
+            renderFrameAboutDialog(f9About);
+            copyFile(f9About, new File(generalDir, "frame_about.png"));
+            copyFile(f9About, new File(outputDir, "frame_09_about.png"));
+            copyFile(f9About, new File(outputDir, "frame_about.png"));
+
             // -------------------------------------------------------------
             // DEDICATED YAESU FT-891 SCREENSHOTS (yaesu_ft891/ and FT891/)
             // -------------------------------------------------------------
@@ -589,6 +596,56 @@ public class ScreenshotGenerator {
         ImageIO.write(img, "png", file);
     }
 
+    private static void drawMenuVectorIcon(Graphics2D g, int index, int cx, int cy) {
+        g.setStroke(new BasicStroke(1.5f));
+        switch (index) {
+            case 0: // Radio
+                g.drawRoundRect(cx - 7, cy - 4, 14, 10, 2, 2);
+                g.drawLine(cx - 3, cy - 4, cx - 1, cy - 8);
+                g.fillOval(cx - 4, cy - 1, 3, 3);
+                break;
+            case 1: // User
+                g.drawOval(cx - 4, cy - 7, 8, 8);
+                g.drawArc(cx - 7, cy + 1, 14, 10, 0, 180);
+                break;
+            case 2: // CQ Mode / Lightning
+                Polygon bolt = new Polygon();
+                bolt.addPoint(cx + 1, cy - 8);
+                bolt.addPoint(cx - 4, cy);
+                bolt.addPoint(cx, cy);
+                bolt.addPoint(cx - 1, cy + 8);
+                bolt.addPoint(cx + 4, cy);
+                bolt.addPoint(cx, cy);
+                g.fillPolygon(bolt);
+                break;
+            case 3: // Donate / Heart
+                Polygon heart = new Polygon();
+                heart.addPoint(cx, cy + 6);
+                heart.addPoint(cx - 6, cy);
+                heart.addPoint(cx - 6, cy - 4);
+                heart.addPoint(cx - 3, cy - 7);
+                heart.addPoint(cx, cy - 4);
+                heart.addPoint(cx + 3, cy - 7);
+                heart.addPoint(cx + 6, cy - 4);
+                heart.addPoint(cx + 6, cy);
+                g.fillPolygon(heart);
+                break;
+            case 4: // About / Info
+                g.drawOval(cx - 7, cy - 7, 14, 14);
+                g.fillOval(cx - 1, cy - 4, 2, 2);
+                g.drawLine(cx, cy - 1, cx, cy + 4);
+                break;
+            case 5: // Git source code
+                g.drawLine(cx - 4, cy - 4, cx - 7, cy);
+                g.drawLine(cx - 7, cy, cx - 4, cy + 4);
+                g.drawLine(cx + 4, cy - 4, cx + 7, cy);
+                g.drawLine(cx + 7, cy, cx + 4, cy + 4);
+                g.drawLine(cx + 2, cy - 6, cx - 2, cy + 6);
+                break;
+        }
+        g.setStroke(new BasicStroke(1f));
+    }
+
     // -------------------------------------------------------------
     // FRAME 2: Menu Lateral / Options Overflow Menu (main_menu.xml)
     // -------------------------------------------------------------
@@ -607,7 +664,7 @@ public class ScreenshotGenerator {
 
         // Lateral Popup Menu (per DefaultPopupMenuStyle in themes.xml)
         int menuW = 230;
-        int menuH = 250;
+        int menuH = 295;
         int menuX = WIDTH - menuW - 16;
         int menuY = 28 + 48;
 
@@ -621,12 +678,13 @@ public class ScreenshotGenerator {
         g.drawRoundRect(menuX, menuY, menuW, menuH, 8, 8);
 
         // Menu Items from main_menu.xml
-        String[][] menuItems = {
-            {"📻", "Open Radio"},
-            {"👤", "User settings"},
-            {"⚡", "CQ Mode"},
-            {"💖", "Donate"},
-            {"💻", "Git source code"}
+        String[] menuItems = {
+            "Open Radio",
+            "User settings",
+            "CQ Mode",
+            "Donate",
+            "About",
+            "Git source code"
         };
 
         int itemH = menuH / menuItems.length;
@@ -641,19 +699,264 @@ public class ScreenshotGenerator {
                 g.fillRect(menuX + 1, iy + 1, 4, itemH - 2);
             }
 
-            g.setFont(new Font("SansSerif", Font.PLAIN, 15));
-            g.setColor(COLOR_TEXT_WHITE);
-            g.drawString(menuItems[i][0], menuX + 16, iy + itemH / 2 + 5);
+            int iconCenterX = menuX + 22;
+            int iconCenterY = iy + itemH / 2;
+            g.setColor((i == 0) ? COLOR_TEAL : COLOR_TEXT_GREY);
+            drawMenuVectorIcon(g, i, iconCenterX, iconCenterY);
 
             g.setFont(new Font("SansSerif", (i == 0) ? Font.BOLD : Font.PLAIN, 15));
             g.setColor((i == 0) ? COLOR_TEAL : COLOR_TEXT_WHITE);
-            g.drawString(menuItems[i][1], menuX + 46, iy + itemH / 2 + 5);
+            g.drawString(menuItems[i], menuX + 44, iy + itemH / 2 + 5);
 
             if (i < menuItems.length - 1) {
                 g.setColor(new Color(0x28, 0x28, 0x28));
                 g.drawLine(menuX + 12, iy + itemH, menuX + menuW - 12, iy + itemH);
             }
         }
+
+        g.dispose();
+        ImageIO.write(img, "png", file);
+    }
+
+    // -------------------------------------------------------------
+    // FRAME 9: About Dialog & Radio Escola (dialog_about.xml)
+    // -------------------------------------------------------------
+    private static void renderFrameAboutDialog(File file) throws Exception {
+        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = createGraphics(img);
+
+        // Render Frame 1 as background
+        renderFrame1DxCluster(file);
+        BufferedImage base = ImageIO.read(file);
+        g.drawImage(base, 0, 0, null);
+
+        // Dim background overlay
+        g.setColor(new Color(0, 0, 0, 205));
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        drawStatusBar(g);
+
+        // Dialog Card
+        int cardW = 490;
+        int cardH = 750;
+        int cardX = (WIDTH - cardW) / 2;
+        int cardY = 70;
+
+        // Card Drop Shadow
+        g.setColor(new Color(0, 0, 0, 220));
+        g.fillRoundRect(cardX + 4, cardY + 6, cardW, cardH, 16, 16);
+
+        // Dialog Background
+        g.setColor(new Color(0x0E, 0x0E, 0x0E));
+        g.fillRoundRect(cardX, cardY, cardW, cardH, 14, 14);
+        g.setColor(new Color(0x2E, 0x2E, 0x2E));
+        g.setStroke(new BasicStroke(1.5f));
+        g.drawRoundRect(cardX, cardY, cardW, cardH, 14, 14);
+        g.setStroke(new BasicStroke(1f));
+
+        int innerPad = 20;
+        int innerX = cardX + innerPad;
+        int innerW = cardW - (innerPad * 2);
+        int curY = cardY + 22;
+
+        // 1. App Header: Logo circle & Titles
+        int logoSize = 52;
+        int logoX = cardX + (cardW - logoSize) / 2;
+        g.setColor(new Color(0x1A, 0x2E, 0x2C));
+        g.fillOval(logoX, curY, logoSize, logoSize);
+        g.setColor(COLOR_TEAL);
+        g.setStroke(new BasicStroke(2f));
+        g.drawOval(logoX, curY, logoSize, logoSize);
+        g.setStroke(new BasicStroke(1f));
+
+        // Radio / Cat antenna symbol inside logo
+        g.setColor(COLOR_TEAL);
+        g.setStroke(new BasicStroke(2f));
+        int cx = logoX + logoSize / 2;
+        int topY = curY + 10;
+        // Mast & legs
+        g.drawLine(cx, topY + 4, cx, topY + 28);
+        g.drawLine(cx, topY + 4, cx - 11, topY + 30);
+        g.drawLine(cx, topY + 4, cx + 11, topY + 30);
+        g.drawLine(cx - 7, topY + 18, cx + 7, topY + 18);
+        // Radio broadcast waves
+        g.drawArc(cx - 10, topY - 2, 20, 16, 45, 90);
+        g.drawArc(cx - 16, topY - 6, 32, 22, 45, 90);
+        g.drawArc(cx - 10, topY - 2, 20, 16, 225, 90);
+        g.drawArc(cx - 16, topY - 6, 32, 22, 225, 90);
+        g.setStroke(new BasicStroke(1f));
+
+        curY += logoSize + 10;
+
+        // App Name
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 20));
+        String appTitle = "CQMiau (MiauDX)";
+        int atw = g.getFontMetrics().stringWidth(appTitle);
+        g.drawString(appTitle, cardX + (cardW - atw) / 2, curY);
+
+        curY += 18;
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        String appSubtitle = "Ham Radio DX Cluster & CAT Control";
+        int asw = g.getFontMetrics().stringWidth(appSubtitle);
+        g.drawString(appSubtitle, cardX + (cardW - asw) / 2, curY);
+
+        curY += 18;
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("Monospaced", Font.BOLD, 12));
+        String appVer = "v1.07 • Target Android 16 (API 36)";
+        int avw = g.getFontMetrics().stringWidth(appVer);
+        g.drawString(appVer, cardX + (cardW - avw) / 2, curY);
+
+        curY += 16;
+
+        // App description box
+        int descH = 48;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(innerX, curY, innerW, descH, 8, 8);
+        g.setColor(new Color(0x28, 0x28, 0x28));
+        g.drawRoundRect(innerX, curY, innerW, descH, 8, 8);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        g.drawString("Miau CQ is an open-source Android app for amateur radio operators,", innerX + 10, curY + 18);
+        g.drawString("featuring real-time DX Cluster, QSO Logbook, and USB CAT rig control.", innerX + 10, curY + 34);
+
+        curY += descH + 12;
+
+        // 2. POWERED BY RÁDIO ESCOLA CARD
+        int reCardH = 135;
+        g.setColor(new Color(0x16, 0x1A, 0x1E));
+        g.fillRoundRect(innerX, curY, innerW, reCardH, 10, 10);
+        g.setColor(new Color(0x03, 0xDA, 0xC5, 90));
+        g.setStroke(new BasicStroke(1.5f));
+        g.drawRoundRect(innerX, curY, innerW, reCardH, 10, 10);
+        g.setStroke(new BasicStroke(1f));
+
+        // Load Radio Escola Icon if available, or draw icon
+        int iconSize = 44;
+        int iconX = innerX + 14;
+        int iconY = curY + 14;
+        boolean drawnIcon = false;
+        File iconFile = new File("app/src/main/res/drawable/ic_radio_escola.png");
+        if (!iconFile.exists()) {
+            iconFile = new File("/workspace/app/src/main/res/drawable/ic_radio_escola.png");
+        }
+        if (iconFile.exists()) {
+            try {
+                BufferedImage reImg = ImageIO.read(iconFile);
+                if (reImg != null) {
+                    g.drawImage(reImg, iconX, iconY, iconSize, iconSize, null);
+                    drawnIcon = true;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        if (!drawnIcon) {
+            g.setColor(new Color(0xDE, 0x1E, 0x25));
+            g.fillRoundRect(iconX, iconY, iconSize, iconSize, 8, 8);
+            g.setColor(COLOR_TEXT_WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 18));
+            g.drawString("RE", iconX + 8, iconY + 28);
+        }
+
+        // Card Titles next to Icon
+        int textX = iconX + iconSize + 12;
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        g.drawString("Powered by Rádio Escola", textX, iconY + 18);
+
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.drawString("radioescola.pt", textX, iconY + 36);
+
+        // Subtitle description inside card
+        g.setColor(new Color(0xC0, 0xC0, 0xC0));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        g.drawString("Plataforma gratuita e comunitária de preparação para exames", innerX + 14, curY + 74);
+        g.drawString("de radioamador da ANACOM em Portugal (Cat. 1, 2 e 3).", innerX + 14, curY + 90);
+
+        // Website button
+        int btnH = 28;
+        int btnY = curY + 98;
+        g.setColor(new Color(0x28, 0x30, 0x38));
+        g.fillRoundRect(innerX + 14, btnY, innerW - 28, btnH, 6, 6);
+        g.setColor(COLOR_TEAL);
+        g.setFont(new Font("SansSerif", Font.BOLD, 12));
+        String wsText = "Visitar radioescola.pt ↗";
+        int wsw = g.getFontMetrics().stringWidth(wsText);
+        g.drawString(wsText, innerX + 14 + (innerW - 28 - wsw) / 2, btnY + 19);
+
+        curY += reCardH + 12;
+
+        // 3. DONATION PAYPAL CARD (RÁDIO ESCOLA)
+        int donateCardH = 120;
+        g.setColor(new Color(0x1A, 0x16, 0x1E));
+        g.fillRoundRect(innerX, curY, innerW, donateCardH, 10, 10);
+        g.setColor(new Color(0xFF, 0xB3, 0x00, 100));
+        g.setStroke(new BasicStroke(1.5f));
+        g.drawRoundRect(innerX, curY, innerW, donateCardH, 10, 10);
+        g.setStroke(new BasicStroke(1f));
+
+        g.setColor(COLOR_AMBER);
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.drawString("Apoiar a Rádio Escola via PayPal", innerX + 14, curY + 22);
+
+        g.setColor(new Color(0xC0, 0xC0, 0xC0));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        g.drawString("A Rádio Escola é mantida por voluntários. O teu donativo cobre alojamento,", innerX + 14, curY + 40);
+        g.drawString("servidores e mantém o ecossistema aberto e gratuito para todos.", innerX + 14, curY + 54);
+
+        // PayPal Button
+        int ppBtnH = 38;
+        int ppBtnY = curY + 68;
+        g.setColor(COLOR_TEAL);
+        g.fillRoundRect(innerX + 14, ppBtnY, innerW - 28, ppBtnH, 8, 8);
+        g.setColor(COLOR_BLACK);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String ppText = "Doar via PayPal • paypal.me/radioescola ↗";
+        int ppw = g.getFontMetrics().stringWidth(ppText);
+        g.drawString(ppText, innerX + 14 + (innerW - 28 - ppw) / 2, ppBtnY + 24);
+
+        curY += donateCardH + 12;
+
+        // 4. OPEN SOURCE & GITHUB CARD
+        int gitCardH = 70;
+        g.setColor(COLOR_SURFACE);
+        g.fillRoundRect(innerX, curY, innerW, gitCardH, 8, 8);
+        g.setColor(COLOR_CARD_BORDER);
+        g.drawRoundRect(innerX, curY, innerW, gitCardH, 8, 8);
+
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g.drawString("100% Free & Open Source on GitHub", innerX + 14, curY + 20);
+
+        g.setColor(COLOR_TEXT_GREY);
+        g.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        g.drawString("https://github.com/dirtybug/MiauDX", innerX + 14, curY + 38);
+
+        int ghBtnH = 22;
+        int ghBtnW = 120;
+        int ghBtnX = innerX + innerW - ghBtnW - 12;
+        int ghBtnY = curY + 16;
+        g.setColor(new Color(0x33, 0x33, 0x33));
+        g.fillRoundRect(ghBtnX, ghBtnY, ghBtnW, ghBtnH, 4, 4);
+        g.setColor(COLOR_TEXT_WHITE);
+        g.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g.drawString("Ver no GitHub ↗", ghBtnX + 14, ghBtnY + 16);
+
+        curY += gitCardH + 16;
+
+        // 5. Close Button
+        int closeBtnH = 44;
+        g.setColor(COLOR_TEAL);
+        g.fillRoundRect(innerX, curY, innerW, closeBtnH, 8, 8);
+        g.setColor(COLOR_BLACK);
+        g.setFont(new Font("SansSerif", Font.BOLD, 15));
+        String closeText = "Fechar";
+        int ctw = g.getFontMetrics().stringWidth(closeText);
+        g.drawString(closeText, innerX + (innerW - ctw) / 2, curY + 27);
 
         g.dispose();
         ImageIO.write(img, "png", file);

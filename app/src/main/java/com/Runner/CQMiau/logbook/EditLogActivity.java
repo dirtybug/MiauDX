@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.Runner.CQMiau.R;
+import com.Runner.CQMiau.WindowInsetsHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,6 +33,7 @@ public class EditLogActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_log);
+        WindowInsetsHelper.apply(this);
 
         dbHelper = new LogDatabaseHelper(this);
 

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.Runner.CQMiau.HamRadioClusterConnection;
 import com.Runner.CQMiau.R;
 import com.Runner.CQMiau.UserSettingsActivity;
+import com.Runner.CQMiau.WindowInsetsHelper;
 import com.Runner.CQMiau.logbook.LogDatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -42,9 +43,6 @@ public class CQModeActivity extends AppCompatActivity {
     private LogDatabaseHelper dbHelper;
 
     public static CQModeActivity getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("CQModeActivity instance is not initialized or destroyed.");
-        }
         return instance;
     }
 
@@ -73,6 +71,7 @@ public class CQModeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cq_mode);
+        WindowInsetsHelper.apply(this);
 
         dbHelper = new LogDatabaseHelper(this);
         instance = this;

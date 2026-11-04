@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Runner.CQMiau.R;
+import com.Runner.CQMiau.WindowInsetsHelper;
 import com.Runner.CQMiau.spot.SpotDetailActivity;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class ViewLogsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_logs);
+        WindowInsetsHelper.apply(this);
 
         dbHelper = new LogDatabaseHelper(this);
 

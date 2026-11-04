@@ -61,6 +61,12 @@ Miau CQ is the all-in-one companion app for amateur radio (Ham Radio) operators.
 • Free and open-source software on GitHub: https://github.com/dirtybug/MiauDX
 • Upgraded for Android 16 (API 36) ensuring full security and compatibility with modern Android devices.
 
+---
+
+📻 POWERED BY RÁDIO ESCOLA
+• Proudly powered by Rádio Escola (https://radioescola.pt) — Portugal's free ham radio learning platform.
+• Support open-source amateur radio tools via PayPal: https://www.paypal.me/radioescola
+
 73 and Good DX!
 ```
 
@@ -115,6 +121,12 @@ O Miau CQ é a aplicação completa para radioamadores! Combina monitorização 
 • Código aberto no GitHub: https://github.com/dirtybug/MiauDX
 • Compatível com Android 16 (API 36).
 
+---
+
+📻 POWERED BY RÁDIO ESCOLA
+• Desenvolvido com o apoio da Rádio Escola (https://radioescola.pt) — Plataforma gratuita de estudo para exames de radioamador em Portugal.
+• Apoie o ecossistema open-source via PayPal: https://www.paypal.me/radioescola
+
 73 e bons contactos!
 ```
 
@@ -132,3 +144,4 @@ O Miau CQ é a aplicação completa para radioamadores! Combina monitorização 
 | **Frame 6** | `frame_06_usb_cat_config.png` | Configuração da porta série USB (baud rate 38400, 8N2) |
 | **Frame 7** | `frame_07_user_settings.png` | Definições de indicativo do operador e cluster |
 | **Frame 8** | `frame_08_edit_qso_log.png` | Formulário para adicionar e editar contactos |
+| **Frame 9** | `frame_09_about.png` | Janela Sobre com Powered by Rádio Escola e Donativos PayPal |

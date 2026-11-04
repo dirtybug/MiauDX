@@ -59,6 +59,7 @@ public class FilterBandActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
+        WindowInsetsHelper.apply(this);
 
 
         // Initialize checkboxes

@@ -9,6 +9,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 
 import com.Runner.CQMiau.MainActivity;
 import com.felhr.usbserial.UsbSerialDevice;
@@ -29,6 +30,7 @@ public class ComPortManager extends Thread {
 
     private UsbDevice usbDevice;
     private UsbSerialDevice serialDevice;
+    private volatile boolean started = false;
 
     private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         @Override
@@ -55,7 +57,11 @@ public class ComPortManager extends Thread {
         this.deviceList = new ArrayList<>();
 
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        context.registerReceiver(usbReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(usbReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            context.registerReceiver(usbReceiver, filter);
+        }
     }
 
     public static synchronized ComPortManager getInstance(Context context) {
@@ -68,6 +74,14 @@ public class ComPortManager extends Thread {
     public static synchronized ComPortManager getInstance() {
 
         return instance;
+    }
+
+    @Override
+    public synchronized void start() {
+        if (!started) {
+            started = true;
+            super.start();
+        }
     }
 
     public void Connect() {
@@ -184,7 +198,7 @@ public class ComPortManager extends Thread {
 
     private void onReceivedData(byte[] data) {
         String response = new String(data);
-        MainActivity.getHandlerObj().logMessage("Response: " + response);
+        onLog("Response: " + response);
     }
 
     public void queueCommand(String command) {
@@ -234,6 +248,9 @@ public class ComPortManager extends Thread {
     }
 
     private void onLog(String message) {
-        MainActivity.getHandlerObj().logMessage(message);
+        MainActivity mainActivity = MainActivity.getHandlerObj();
+        if (mainActivity != null) {
+            mainActivity.logMessage(message);
+        }
     }
 }

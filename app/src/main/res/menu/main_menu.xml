@@ -14,13 +14,12 @@
         android:title="CQ Mode" />
     <item
         android:id="@+id/donate"
-
-
         android:title="@string/donate" />
     <item
+        android:id="@+id/about"
+        android:title="@string/about_title" />
+    <item
         android:id="@+id/sourceCode"
-
-
         android:title="Git source code" />
 
 </menu>

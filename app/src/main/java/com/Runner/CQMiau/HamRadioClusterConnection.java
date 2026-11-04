@@ -24,7 +24,8 @@ public class HamRadioClusterConnection extends Thread {
     private static final String TAG = "HamRadioCluster";
     private static volatile HamRadioClusterConnection instance;
     private final TelnetClient telnetClient;
-    private final String callsign;
+    private final Context appContext;
+    private volatile String callsign;
     private JSONArray clusters;
     private DXCCLoader dxccload;
     private PrintWriter writer;
@@ -33,10 +34,12 @@ public class HamRadioClusterConnection extends Thread {
     private BlockingQueue<String> commandQueue;
     private volatile boolean isConnected = false;
     private volatile boolean isRunning = true;
+    private volatile boolean started = false;
 
     private HamRadioClusterConnection(Context context) {
+        this.appContext = context.getApplicationContext();
         try {
-            InputStream is = context.getAssets().open("ham_radio_clusters.json");
+            InputStream is = this.appContext.getAssets().open("ham_radio_clusters.json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
@@ -45,12 +48,12 @@ public class HamRadioClusterConnection extends Thread {
             clusters = new JSONArray(jsonString);
 
             this.commandQueue = new LinkedBlockingQueue<>();
-            this.dxccload = new DXCCLoader(context);
+            this.dxccload = new DXCCLoader(this.appContext);
         } catch (IOException | JSONException e) {
             Log.e(TAG, "Failed to load cluster data: " + e.getMessage(), e);
         }
 
-        callsign = UserSettingsActivity.getCallsign(context);
+        callsign = UserSettingsActivity.getCallsign(this.appContext);
         this.telnetClient = new TelnetClient();
     }
 
@@ -70,7 +73,29 @@ public class HamRadioClusterConnection extends Thread {
     }
 
     public boolean isRunning() {
-        return isConnected;
+        return started && isAlive();
+    }
+
+    @Override
+    public synchronized void start() {
+        if (!started) {
+            started = true;
+            super.start();
+        }
+    }
+
+    public synchronized void updateCallsign(String newCallsign) {
+        if (newCallsign == null || newCallsign.trim().isEmpty()) {
+            return;
+        }
+        String normalized = newCallsign.trim().toUpperCase();
+        boolean changed = !normalized.equals(this.callsign);
+        this.callsign = normalized;
+        if (!started) {
+            start();
+        } else if (changed && isConnected) {
+            new Thread(this::disconnect).start();
+        }
     }
 
     @Override
@@ -101,6 +126,13 @@ public class HamRadioClusterConnection extends Thread {
 
     private boolean attemptConnection() {
         try {
+            if (callsign == null || callsign.isEmpty()) {
+                callsign = UserSettingsActivity.getCallsign(appContext);
+            }
+            if (callsign == null || callsign.isEmpty()) {
+                return false;
+            }
+
             JSONObject cluster = getNextCluster();
             if (cluster == null) {
                 onLog("No more clusters to connect to.");
@@ -222,7 +254,10 @@ public class HamRadioClusterConnection extends Thread {
                     }
                 } else {
                     String flag = this.dxccload.getFlagFromCallSign(dxCallSign);
-                    MainActivity.getHandlerObj().addSpot(frequency, flag, dxCallSign, location, comment);
+                    MainActivity mainActivity = MainActivity.getHandlerObj();
+                    if (mainActivity != null) {
+                        mainActivity.addSpot(frequency, flag, dxCallSign, location, comment);
+                    }
                 }
             }
 

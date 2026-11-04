@@ -3,6 +3,8 @@ package com.Runner.CQMiau;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ public class UserSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_settings);
+        WindowInsetsHelper.apply(this);
 
         callsignEditText = findViewById(R.id.callsignEditText);
         saveButton = findViewById(R.id.saveButton);
@@ -40,21 +43,43 @@ public class UserSettingsActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String savedCallsign = preferences.getString(KEY_CALLSIGN, "");
         callsignEditText.setText(savedCallsign);
+        callsignEditText.setSelection(callsignEditText.getText().length());
+
+        callsignEditText.requestFocus();
+        callsignEditText.postDelayed(() -> {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(callsignEditText, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 200);
+
+        callsignEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE
+                    || actionId == EditorInfo.IME_ACTION_GO
+                    || actionId == EditorInfo.IME_NULL) {
+                saveCallsign(preferences);
+                return true;
+            }
+            return false;
+        });
 
         // Save callsign on button click
-        saveButton.setOnClickListener(v -> {
-            String newCallsign = callsignEditText.getText().toString().trim().toUpperCase();
-            if (!newCallsign.isEmpty()) {
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString(KEY_CALLSIGN, newCallsign);
-                editor.apply();
-                Toast.makeText(this, "Callsign saved! Closing APP please Reopen", Toast.LENGTH_SHORT).show();
+        saveButton.setOnClickListener(v -> saveCallsign(preferences));
+    }
 
-                finishAffinity(); // Close all activities
-                finish();
-            } else {
-                Toast.makeText(this, "Please enter a valid callsign.", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void saveCallsign(SharedPreferences preferences) {
+        String newCallsign = callsignEditText.getText().toString().trim().toUpperCase();
+        if (!newCallsign.isEmpty()) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(KEY_CALLSIGN, newCallsign);
+            editor.commit();
+
+            HamRadioClusterConnection.getInstance(this).updateCallsign(newCallsign);
+            Toast.makeText(this, "Callsign saved: " + newCallsign, Toast.LENGTH_SHORT).show();
+
+            finish();
+        } else {
+            Toast.makeText(this, "Please enter a valid callsign.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -17,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.Runner.CQMiau.HamRadioClusterConnection;
 import com.Runner.CQMiau.R;
+import com.Runner.CQMiau.WindowInsetsHelper;
 import com.Runner.CQMiau.comPort.ComPortManager;
 import com.Runner.CQMiau.logbook.LogDatabaseHelper;
 import com.Runner.CQMiau.radios.RadioBase;
@@ -37,6 +37,7 @@ public class SpotDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot);
+        WindowInsetsHelper.apply(this);
 
         // Initialize database helper
         dbHelper = new LogDatabaseHelper(this);

@@ -24,7 +24,7 @@ import com.Runner.CQMiau.spot.SpotsAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String DONATE = "https://www.paypal.com/donate/?hosted_button_id=BJ44UH97D4MMS";
+    private static final String DONATE = "https://www.paypal.me/radioescola";
     private static final String SOURCE = "https://github.com/dirtybug/MiauDX/";
 
     private static final String KEY_LOGS = "logs"; // Key to save logs
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        WindowInsetsHelper.apply(this);
 
         logsView = findViewById(R.id.logsView);
         spotsRecyclerView = findViewById(R.id.spotsRecyclerView);
@@ -65,19 +66,15 @@ public class MainActivity extends AppCompatActivity {
         spotsRecyclerView.setAdapter(spotsAdapter);
 
         uiHandler = new Handler(Looper.getMainLooper());
+        MainActivity.obj = this;
+        ComPortManager.getInstance(this);
 
         String callsign = UserSettingsActivity.getCallsign(this);
         if (callsign == null || callsign.isEmpty()) {
             startActivity(new Intent(this, UserSettingsActivity.class));
         } else {
-            clusterConnection = HamRadioClusterConnection.getInstance(this);
-            if (!clusterConnection.isRunning()) {
-                clusterConnection.start();
-            }
+            startClusterIfNeeded();
         }
-
-        MainActivity.obj = this;
-        ComPortManager.getInstance(this);
 
         viewLogButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ViewLogsActivity.class);
@@ -89,8 +86,21 @@ public class MainActivity extends AppCompatActivity {
             FilterBandActivity.setBandFilterCallback(this::filterBand);
             startActivity(intent);
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MainActivity.obj = this;
+        String callsign = UserSettingsActivity.getCallsign(this);
+        if (callsign != null && !callsign.isEmpty()) {
+            startClusterIfNeeded();
+        }
+    }
 
+    private void startClusterIfNeeded() {
+        clusterConnection = HamRadioClusterConnection.getInstance(this);
+        clusterConnection.start();
     }
 
     @Override
@@ -130,6 +140,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            case R.id.about: {
+                new AboutDialogFragment().show(getSupportFragmentManager(), "about_dialog");
+                return true;
+            }
+
             case R.id.sourceCode: {
                 // Open the donation URL
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE));
@@ -159,11 +174,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logMessage(String message) {
-        logsView.append(message + "\n");
-
-        // Scroll to the bottom of the ScrollView
-        ScrollView logScrollView = findViewById(R.id.logScrollView);
-        logScrollView.post(() -> logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
+        if (uiHandler == null) {
+            return;
+        }
+        uiHandler.post(() -> {
+            if (logsView != null) {
+                logsView.append(message + "\n");
+            }
+            // Scroll to the bottom of the ScrollView
+            ScrollView logScrollView = findViewById(R.id.logScrollView);
+            if (logScrollView != null) {
+                logScrollView.post(() -> logScrollView.fullScroll(ScrollView.FOCUS_DOWN));
+            }
+        });
     }
 
     public void addSpot(String frequency, String flag, String callSign, String location, String comment) {

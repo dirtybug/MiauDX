@@ -27,4 +27,19 @@
     <string name="log_book">Log Book</string>
     <string name="add_to_log">Add To Log</string>
     <string name="save_changes">Save Changes</string>
+
+    <!-- About Dialog & Radio Escola -->
+    <string name="about_title">About</string>
+    <string name="powered_by_radio_escola">Powered by Rádio Escola</string>
+    <string name="radio_escola_url">https://radioescola.pt</string>
+    <string name="radio_escola_paypal_url">https://www.paypal.me/radioescola</string>
+    <string name="radio_escola_donativos_url">https://radioescola.pt/donativos</string>
+    <string name="about_app_description">Miau CQ is an open-source Android app for amateur radio operators featuring real-time DX Cluster monitoring, QSO Logbook, and USB CAT rig control.</string>
+    <string name="about_radio_escola_description">Plataforma gratuita e comunitária de preparação para exames de radioamador em Portugal (Categorias 1, 2 e 3).</string>
+    <string name="about_donate_title">Apoiar a Rádio Escola via PayPal</string>
+    <string name="about_donate_description">A Rádio Escola é mantida por voluntários. O teu apoio cobre o alojamento de servidores e mantém o projeto gratuito para todos.</string>
+    <string name="about_donate_button">Doar via PayPal • radioescola.pt ↗</string>
+    <string name="about_visit_website">Visitar radioescola.pt ↗</string>
+    <string name="about_github_button">Ver Código-Fonte no GitHub ↗</string>
+    <string name="about_close">Fechar</string>
 </resources>
