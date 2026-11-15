@@ -116,7 +116,8 @@ android {
             } else {
                 signingConfig null
             }
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "mipmap", "ic_launcher", "@mipmap/ic_launcher"
