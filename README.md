@@ -69,6 +69,7 @@ To sign release builds for Google Play Store upload, configure these three repos
 | `KEYSTORE_BASE64` | Base64-encoded string of your release keystore (`.jks` or `.keystore`) | *(generated via bash command below)* |
 | `KEYSTORE_PASSWORD` | Keystore password and private key password | `YourStrongKeystorePassword` |
 | `KEY_ALIAS` | Key alias in the keystore *(optional, defaults to `key0`)* | `key0` |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Google Play Console Service Account JSON (raw JSON or Base64) for automatic Play Store publishing on tag push | `{"type": "service_account", ...}` |
 
 #### How to convert your keystore to Base64:
 - **On Linux / macOS:**

@@ -14,7 +14,16 @@ on:
       - opened
       - synchronize
       - reopened
+  release:
+    types:
+      - created
+      - published
   workflow_dispatch:
+    inputs:
+      tag_version:
+        description: 'Optional tag/version to release (e.g. v1.0.8)'
+        required: false
+        type: string
 
 jobs:
   build-test:
@@ -34,6 +43,12 @@ jobs:
         run: |
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
+            IS_TAG_RELEASE="true"
+          elif [[ "${{ github.event_name }}" == "release" && -n "${{ github.event.release.tag_name }}" ]]; then
+            TAG_NAME="${{ github.event.release.tag_name }}"
+            IS_TAG_RELEASE="true"
+          elif [[ -n "${{ inputs.tag_version }}" ]]; then
+            TAG_NAME="${{ inputs.tag_version }}"
             IS_TAG_RELEASE="true"
           else
             TAG_NAME="development"
@@ -86,7 +101,7 @@ jobs:
           echo "====================================================="
 
       - name: Validate Tag
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.IS_TAG_RELEASE == 'true'
         run: |
           TAG_NAME="${{ env.TAG_NAME }}"
           echo "Processing build for tag: '${TAG_NAME}'"
@@ -161,6 +176,14 @@ jobs:
             if [ "${TARGET_DIR}" != "release/development" ]; then
               cp -f "release/development/MiauCQ-release.aab" "${TARGET_DIR}/MiauCQ-release.aab" 2>/dev/null || true
             fi
+          elif [ -f "release/MiauCQ-release.aab" ]; then
+            cp -f "release/MiauCQ-release.aab" "${TARGET_DIR}/MiauCQ-${VERSION}.aab" 2>/dev/null || true
+            if [ "${TARGET_DIR}" != "release/development" ]; then
+              cp -f "release/MiauCQ-release.aab" "${TARGET_DIR}/MiauCQ-release.aab" 2>/dev/null || true
+            fi
+          elif [ -f "app/build/outputs/bundle/release/app-release.aab" ]; then
+            cp -f "app/build/outputs/bundle/release/app-release.aab" "${TARGET_DIR}/MiauCQ-${VERSION}.aab" 2>/dev/null || true
+            cp -f "app/build/outputs/bundle/release/app-release.aab" "${TARGET_DIR}/MiauCQ-release.aab" 2>/dev/null || true
           fi
 
           # 3. Ensure Test Reports and Screenshots are copied to TARGET_DIR
@@ -205,8 +228,7 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
-      - name: Upload Release AAB Bundle Artifact (on Tag push)
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload Release AAB Bundle Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MiauCQ-${{ env.VERSION }}-aab
@@ -231,7 +253,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Create or Update GitHub Release (on Tag push)
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.IS_TAG_RELEASE == 'true'
         uses: softprops/action-gh-release@v2
         with:
           name: "MiauCQ ${{ env.VERSION }}"
@@ -262,8 +284,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare Google Play Store Credentials (on Tag push)
+        id: play_creds
+        if: env.IS_TAG_RELEASE == 'true'
+        env:
+          RAW_SA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$RAW_SA" ]; then
+            echo ">>> Google Play Service Account secret detected. Preparing credentials..."
+            if echo "$RAW_SA" | grep -q "{"; then
+              printf '%s' "$RAW_SA" > /tmp/play-service-account.json
+            else
+              echo "$RAW_SA" | base64 --decode > /tmp/play-service-account.json
+            fi
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ Secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON not configured; skipping direct Google Play Store upload."
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish AAB to Google Play Store (on Tag push)
+        if: env.IS_TAG_RELEASE == 'true' && steps.play_creds.outputs.has_creds == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: /tmp/play-service-account.json
+          packageName: com.Runner.CQMiau
+          releaseFiles: release/${{ env.VERSION }}/MiauCQ-${{ env.VERSION }}.aab
+          track: ${{ vars.GOOGLE_PLAY_TRACK || 'production' }}
+          status: completed
+          inAppUpdatePriority: 2
+
       - name: Sync Release Metadata to Main Branch
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.IS_TAG_RELEASE == 'true'
         run: |
           echo ">>> Syncing new release ${{ env.VERSION }} metadata to repository branch..."
           git config user.name "github-actions[bot]"

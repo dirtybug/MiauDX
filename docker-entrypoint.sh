@@ -206,6 +206,7 @@ case "$ACTION" in
         cp -f "$RELEASE_DIR/MiauCQ-release.apk" "$RELEASE_DIR/MiauCQ-development-release.apk" 2>/dev/null || true
         cp -f "$RELEASE_DIR/MiauCQ-release.apk" /workspace/release/MiauCQ-release.apk 2>/dev/null || true
         find app/build/outputs/bundle/release -name "*.aab" -exec cp {} "$RELEASE_DIR/MiauCQ-release.aab" \; 2>/dev/null || true
+        cp -f "$RELEASE_DIR/MiauCQ-release.aab" "$RELEASE_DIR/MiauCQ-development-release.aab" 2>/dev/null || true
         cp -f "$RELEASE_DIR/MiauCQ-release.aab" /workspace/release/MiauCQ-release.aab 2>/dev/null || true
         (cd "$RELEASE_DIR" && sha256sum *.apk *.aab > SHA256SUMS.txt 2>/dev/null || true)
         (cd /workspace/release && sha256sum MiauCQ-release.apk MiauCQ-release.aab > SHA256SUMS.txt 2>/dev/null || true)
