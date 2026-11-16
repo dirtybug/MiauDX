@@ -7,6 +7,28 @@ Official release assets can also be directly downloaded from the [GitHub Release
 ---
 
 <!-- RELEASES_LIST_START -->
+## [v1.0.9] - 2026-11-16
+
+### 📱 Google Play Store Metadata
+- **Version Name (`versionName`):** `1.09`
+- **Version Code (`versionCode`):** `109`
+- **Application ID:** `com.Runner.CQMiau`
+- **Target SDK:** Android 16 (API 36) / **Min SDK:** Android 8.0 (API 26)
+
+### 🧪 Tests & Quality
+- **Test Suite:** 100% Passed (Unit Tests & Frame Screenshot Tests)
+- **Hermetic Build Environment:** Docker (OpenJDK 17 + Android SDK 36)
+
+### 📥 Release Deliverables
+| Artifact | File | Description |
+| :--- | :--- | :--- |
+| **AAB Bundle** | [`MiauCQ-v1.0.9.aab`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.9) | Signed production Android App Bundle for Google Play Store |
+| **APK Release** | [`MiauCQ-v1.0.9.apk`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.9) | Signed production Android APK for direct device installation |
+| **Screenshots** | [`MiauCQ-v1.0.9-screenshots.zip`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.9) | Full visual frame screenshots for all app activities |
+| **Test Reports** | [`MiauCQ-v1.0.9-test-reports.zip`](https://github.com/dirtybug/MiauDX/releases/tag/v1.0.9) | Test execution reports |
+
+---
+
 ## [v1.0.8] - 2026-11-15
 
 ### 📱 Google Play Store Metadata
